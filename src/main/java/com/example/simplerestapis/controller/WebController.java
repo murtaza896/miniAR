@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.tomcat.util.json.JSONParser;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -49,10 +50,8 @@ public class WebController {
 	@Autowired
 	private FileBasedDeployAndRetrieve fbd;
 	
-//	@GetMapping("/authorized")
-//	public String authorized(@RequestParam String code) {
-//		return "My auth_token: " + code;
-//	}
+	@Autowired
+	private Environment env;
 	
 	@GetMapping("/")
 	public ModelAndView welcome() {
@@ -64,12 +63,13 @@ public class WebController {
 	@GetMapping("/new")
 	public ModelAndView authorized(@RequestParam String code) 
 	{
+		
 		ModelAndView mv = new ModelAndView();
 		
 		String accessToken;
 		String refreshToken;
-		String clientId = "3MVG9n_HvETGhr3C21YA3Wd8zCW4pR2Ir9LH5wJcDYepa5rbaz8dUlP.TUncSKKDzBNIPfy98l.e4LWDF.3St";
-		String clientSecret = "D2495C63C90F7F2FE5955E78EA64560035E7BC0C3DD320FEB2032BF4CFB6E303";
+		String clientId = env.getProperty("app.client_id");
+		String clientSecret = env.getProperty("app.client_secret");
 		String organizationId;
 		String issuedAt;
 		String identityUrl;
@@ -94,8 +94,6 @@ public class WebController {
 		ResponseEntity<String> response = restTemplate.postForEntity( url, request , String.class );
 		JSONObject obj = new JSONObject(response.getBody());
 
-		
-		
 		accessToken = obj.getString("access_token");
 		refreshToken = obj.getString("refresh_token");
 		instanceUrl = obj.getString("instance_url");
@@ -111,13 +109,13 @@ public class WebController {
 		builder.queryParams(vars);
 		
 		String response2 = restTemplate.getForObject(builder.build().encode().toUriString(), String.class, vars);
-		System.out.println(response2);
 		JSONObject obj2 = new JSONObject(response2);
 		
 		organizationId = obj2.getString("organization_id");
 		
 		SalesforceOrg org = new SalesforceOrg(organizationId, accessToken, refreshToken, clientId, clientSecret, identityUrl, instanceUrl, issuedAt);
 		SFservice.addOrg(org);
+		
 		mv.addObject("orgId",organizationId );
 		mv.setViewName("retrieve");
 		return mv;
@@ -148,34 +146,34 @@ public class WebController {
 		return mv;
 	}
 	
-	@RequestMapping("/get-all-users")
-	public List<User> getAllUsers() 
-	{
-		return service.getAllUsers();
-	}
-	
-	@GetMapping("/get-user/{id}")
-	public User getUserById(@PathVariable int id) 
-	{
-		return service.getUserById(id);
-	}
-	
-	@PostMapping("/add-user")
-	public User addUser(@RequestBody User inputPayload) {
-		return service.addUser(inputPayload);
-	}
-	
-	@PutMapping("/update-user")
-	public User updateUser(@RequestBody User new_user) 
-	{
-		return  service.updateUser(new_user);
-	}
-	
-	@DeleteMapping("/delete-user")
-	public String deleteUser(@RequestParam int id) 
-	{
-		return service.deleteUser(id);
-	}
+//	@RequestMapping("/get-all-users")
+//	public List<User> getAllUsers() 
+//	{
+//		return service.getAllUsers();
+//	}
+//	
+//	@GetMapping("/get-user/{id}")
+//	public User getUserById(@PathVariable int id) 
+//	{
+//		return service.getUserById(id);
+//	}
+//	
+//	@PostMapping("/add-user")
+//	public User addUser(@RequestBody User inputPayload) {
+//		return service.addUser(inputPayload);
+//	}
+//	
+//	@PutMapping("/update-user")
+//	public User updateUser(@RequestBody User new_user) 
+//	{
+//		return  service.updateUser(new_user);
+//	}
+//	
+//	@DeleteMapping("/delete-user")
+//	public String deleteUser(@RequestParam int id) 
+//	{
+//		return service.deleteUser(id);
+//	}
 }
 
 
