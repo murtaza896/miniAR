@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+<%@ include file="common/navigation.jspf"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,3 +16,4 @@ response_type=code">
 		Authorize Salesforce Org</a>
 </body>
 </html>
+<%@ include file="common/footer.jspf"%>
