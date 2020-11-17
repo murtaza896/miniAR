@@ -23,7 +23,7 @@ public class SalesforceService {
 
 	@Autowired
 	private SalesforceOrgRepository repository;
-	
+
 	@Autowired
 	private Environment env;
 
@@ -43,12 +43,13 @@ public class SalesforceService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-		String url = "https://login.salesforce.com/services/oauth2/token";
+//		String url = "https://login.salesforce.com/services/oauth2/token";
+		String url = env.getProperty("app.sf.access_token.uri");
 
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-		map.add("client_id", sfOrg.getClientId());
-		map.add("redirect_uri", "http://localhost:8080/authorized");
-		map.add("client_secret", sfOrg.getClientSecret());
+		map.add("client_id", env.getProperty("app.sf.client_id"));
+		map.add("redirect_uri", env.getProperty("app.sf.redirect.uri2"));
+		map.add("client_secret", env.getProperty("app.sf.client_secret"));
 		map.add("refresh_token", sfOrg.getRefreshToken());
 		map.add("grant_type", "refresh_token");
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
@@ -61,14 +62,13 @@ public class SalesforceService {
 		repository.save(sfOrg);
 		return token;
 	}
-	
-	
-	public String authenticateOrg(String code) {
-		
+
+	public String authorizeOrg(String code) {
+
 		String accessToken;
 		String refreshToken;
-		String clientId = env.getProperty("app.client_id");
-		String clientSecret = env.getProperty("app.client_secret");
+		String clientId = env.getProperty("app.sf.client_id");
+		String clientSecret = env.getProperty("app.sf.client_secret");
 		String organizationId;
 		String issuedAt;
 		String identityUrl;
@@ -78,26 +78,29 @@ public class SalesforceService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-		String url = "https://login.salesforce.com/services/oauth2/token";
-		
-		MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+//		String url = "https://login.salesforce.com/services/oauth2/token";
+		String url = env.getProperty("app.sf.access_token.uri");
+
+		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.add("client_id", clientId);
-		map.add("redirect_uri", "http://localhost:8080/new-org");
+
+		map.add("redirect_uri", env.getProperty("app.sf.redirect.uri2"));
+
 		map.add("client_secret", clientSecret);
 		map.add("code", code);
 		map.add("grant_type", "authorization_code");
 
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 
-		ResponseEntity<String> response = restTemplate.postForEntity( url, request , String.class );
+		ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
 		JSONObject obj = new JSONObject(response.getBody());
 
 		accessToken = obj.getString("access_token");
 		refreshToken = obj.getString("refresh_token");
 		instanceUrl = obj.getString("instance_url");
-		identityUrl = obj.getString("id");     
+		identityUrl = obj.getString("id");
 		issuedAt = obj.getString("issued_at");
-		
+
 		String url2 = identityUrl;
 		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url2);
 
@@ -105,17 +108,18 @@ public class SalesforceService {
 		vars.add("oauth_token", accessToken);
 		vars.add("format", "json");
 		builder.queryParams(vars);
-		
+
 		String response2 = restTemplate.getForObject(builder.build().encode().toUriString(), String.class, vars);
 		JSONObject obj2 = new JSONObject(response2);
-		
+
 		organizationId = obj2.getString("organization_id");
-		
-		SalesforceOrg org = new SalesforceOrg(organizationId, accessToken, refreshToken, clientId, clientSecret, identityUrl, instanceUrl, issuedAt);
+
+		SalesforceOrg org = new SalesforceOrg(organizationId, accessToken, refreshToken, identityUrl, instanceUrl,
+				issuedAt);
 		this.addOrg(org);
-		
+
 		return organizationId;
-		
+
 	}
-	
+
 }

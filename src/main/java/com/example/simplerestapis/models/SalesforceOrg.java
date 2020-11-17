@@ -27,12 +27,6 @@ public class SalesforceOrg {
 	@Column(name="refresh_token")
 	String refreshToken;
 	
-	@Column(name="client_id")
-	String clientId;
-	
-	@Column(name="client_secret")
-	String clientSecret;
-	
 	@Column(name="identity_url")
 	String identityUrl;
 	
@@ -64,14 +58,11 @@ public class SalesforceOrg {
 		this.user = user;
 	}
 
-	public SalesforceOrg(String organizationId, String accessToken, String refreshToken, String clientId,
-			String clientSecret, String identityUrl, String instanceUrl, String issuedAt) {
+	public SalesforceOrg(String organizationId, String accessToken, String refreshToken, String identityUrl, String instanceUrl, String issuedAt) {
 		super();
 		this.organizationId = organizationId;
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;
-		this.clientId = clientId;
-		this.clientSecret = clientSecret;
 		this.identityUrl = identityUrl;
 		this.instanceUrl = instanceUrl;
 		this.issuedAt = issuedAt;
@@ -107,22 +98,6 @@ public class SalesforceOrg {
 
 	public void setRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
-	}
-
-	public String getClientId() {
-		return clientId;
-	}
-
-	public void setClientId(String clientId) {
-		this.clientId = clientId;
-	}
-
-	public String getClientSecret() {
-		return clientSecret;
-	}
-
-	public void setClientSecret(String clientSecret) {
-		this.clientSecret = clientSecret;
 	}
 
 	public String getIdentityUrl() {

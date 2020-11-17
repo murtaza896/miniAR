@@ -17,16 +17,13 @@ public class GitRepo {
 	@Id
 	@NonNull
 	@Column(name = "repo_id")
-	int repo_id;
+	String repo_id;
 	
 	@Column(name = "repo_name")
 	String repo_name;
 	
 	@Column(name = "repo_url")
 	String repo_url;
-	
-	@Column(name = "access_token")
-	String access_token;
 	
 	@Column(name = "username")
 	String username;
@@ -40,11 +37,11 @@ public class GitRepo {
 	@JoinColumn(name = "org_id")
 	private SalesforceOrg org;
 
-	public int getRepo_id() {
+	public String getRepo_id() {
 		return repo_id;
 	}
 
-	public void setRepo_id(int repo_id) {
+	public void setRepo_id(String repo_id) {
 		this.repo_id = repo_id;
 	}
 
@@ -62,14 +59,6 @@ public class GitRepo {
 
 	public void setRepo_url(String repo_url) {
 		this.repo_url = repo_url;
-	}
-
-	public String getAccess_token() {
-		return access_token;
-	}
-
-	public void setAccess_token(String access_token) {
-		this.access_token = access_token;
 	}
 
 	public String getUsername() {
@@ -96,16 +85,25 @@ public class GitRepo {
 		this.org = org;
 	}
 
-	public GitRepo(int repo_id, String repo_name, String repo_url, String access_token, String username, User user,
+	public GitRepo(String repo_id, String repo_name, String repo_url, String username, User user,
 			SalesforceOrg org) {
 		super();
 		this.repo_id = repo_id;
 		this.repo_name = repo_name;
 		this.repo_url = repo_url;
-		this.access_token = access_token;
 		this.username = username;
 		this.user = user;
 		this.org = org;
+	}
+	
+	public GitRepo(String repo_id, String repo_name, String repo_url, String username) {
+		super();
+		this.repo_id = repo_id;
+		this.repo_name = repo_name;
+		this.repo_url = repo_url;
+		this.username = username;
+//		this.user = user;
+//		this.org = org;
 	}
 
 	public GitRepo() {

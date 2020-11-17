@@ -26,6 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.example.simplerestapis.models.User;
 import com.example.simplerestapis.models.userCredentials;
 import com.example.simplerestapis.service.FileBasedDeployAndRetrieve;
+import com.example.simplerestapis.service.GitStoreService;
 import com.example.simplerestapis.service.SalesforceService;
 import com.example.simplerestapis.service.UserService;
 
@@ -37,6 +38,9 @@ public class WebController {
 	
 	@Autowired
 	private SalesforceService SFservice;
+	
+	@Autowired
+	private GitStoreService gitStoreService;
 	
 	@Autowired
 	private FileBasedDeployAndRetrieve fbd;
@@ -80,47 +84,65 @@ public class WebController {
 	
 
 	@CrossOrigin("*")
-	@GetMapping("/showRepos")
-	public ArrayList<String> showRepos() throws Exception {
-		URL url = new URL("https://api.github.com/user/repos");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestProperty("Authorization","Bearer "+"4679adaf851ec7dcfaf7013c6d58cc613580ac02");
-        conn.setRequestProperty("Content-Type","application/json");
-        conn.setRequestMethod("GET");
-        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String output;
+	@GetMapping("/new-org")
+	public String authorizeOrg(@RequestParam(required = false) String code) 
+	{
+		return SFservice.authorizeOrg(code);
+	}
 
-        StringBuffer response = new StringBuffer();
-        while ((output = in.readLine()) != null) {
-            response.append(output);
-        }
-        JSONArray jsonArr = new JSONArray(response.toString());
-        JSONArray result = new JSONArray();
-        ArrayList<String> array = new ArrayList<String>();
-        System.out.println(jsonArr);
-       for (int i = 0; i < jsonArr.length(); i++)
-        {
-            JSONObject jsonObj = jsonArr.getJSONObject(i);
-            array.add(jsonObj.getString("svn_url"));           
-            System.out.println(jsonObj.getString("svn_url"));
-       }
-        in.close();
-        
-        return array;
-		
+//	@GetMapping("/showRepos")
+//	public ArrayList<String> showRepos() throws Exception {
+//		URL url = new URL("https://api.github.com/user/repos");
+//        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//        conn.setRequestProperty("Authorization","Bearer "+"3b32577b36090b71ef53cf0a4ea39856168291ec");
+//        conn.setRequestProperty("Content-Type","application/json");
+//        conn.setRequestMethod("GET");
+//        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//        String output;
+//
+//        StringBuffer response = new StringBuffer();
+//        while ((output = in.readLine()) != null) {
+//            response.append(output);
+//        }
+//        JSONArray jsonArr = new JSONArray(response.toString());
+//        JSONArray result = new JSONArray();
+//        ArrayList<String> array = new ArrayList<String>();
+//        System.out.println(jsonArr);
+//       for (int i = 0; i < jsonArr.length(); i++)
+//        {
+//            JSONObject jsonObj = jsonArr.getJSONObject(i);
+//            array.add(jsonObj.getString("svn_url"));           
+//            System.out.println(jsonObj.getString("svn_url"));
+//       }
+//        in.close();
+//        
+//        return array;
+//		
+//	}
+	
+//	@GetMapping("/new-org")
+//	public ModelAndView authorized(@RequestParam String code) 
+//	{
+//		String organizationId = SFservice.authorizeOrg(code);
+//		
+//		ModelAndView mv = new ModelAndView();
+//		mv.addObject("orgId",organizationId );
+//		mv.setViewName("retrieve");
+//		return organizationId;
+//	
+//	}
+
+	
+	@GetMapping("/new-repo")
+	public String authorizeGitAcc(@RequestParam String code) {
+		return gitStoreService.authorizeGitAcc(code);
 	}
 	
-	@GetMapping("/new-org")
-	public ModelAndView authorized(@RequestParam String code) 
+	@GetMapping("/list-repo")
+	public String listRepos()
 	{
-		String organizationId = SFservice.authenticateOrg(code);
-		
-		ModelAndView mv = new ModelAndView();
-		mv.addObject("orgId",organizationId );
-		mv.setViewName("retrieve");
-		return mv;
+		return "I am authorized";
 	}
-
 	
 	@GetMapping("/retrieve/{orgId}")
 	public ModelAndView retrieveData(@PathVariable String orgId) {
@@ -145,6 +167,7 @@ public class WebController {
 		}
 		return mv;
 	}
+	
 }
 
 
