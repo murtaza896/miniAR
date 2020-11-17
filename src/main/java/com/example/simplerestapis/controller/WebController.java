@@ -8,23 +8,23 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.example.simplerestapis.models.User;
+import com.example.simplerestapis.models.userCredentials;
 import com.example.simplerestapis.service.FileBasedDeployAndRetrieve;
 import com.example.simplerestapis.service.SalesforceService;
 import com.example.simplerestapis.service.UserService;
@@ -49,6 +49,36 @@ public class WebController {
 		return mv;
 	}
 	
+	@PostMapping("/register")
+	public User register(@RequestBody User user) {
+		return service.addUser(user);
+	}
+	
+	@PostMapping("/login")
+	public User login(@RequestBody userCredentials user, HttpServletResponse response) {
+		User user1= service.validateUser(user);
+		if(user1 != null && user1.getPassword().equals(user.password)) {
+			System.out.println(user1.toString());
+			Cookie cookie = new Cookie("user_id", String.valueOf(user1.getId()));
+			
+			response.addCookie(cookie);
+			return user1;
+		}
+		return null;
+	}
+	
+	@GetMapping("/xyz")
+	public String xyz(HttpServletRequest request) {
+		Cookie cookies[] = request.getCookies();
+		for(Cookie c : cookies) {
+			if(c.getName().equals("user_id"))
+				return c.getValue();
+		}
+		
+		return "";
+	}
+	
+
 	@CrossOrigin("*")
 	@GetMapping("/showRepos")
 	public ArrayList<String> showRepos() throws Exception {

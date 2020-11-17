@@ -4,7 +4,10 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.sun.istack.NotNull;
@@ -38,6 +41,28 @@ public class SalesforceOrg {
 	
 	@Column(name="issued_at")
 	String issuedAt;
+	
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "user_id")
+	private User user;
+
+	public SalesforceOrg() {
+		
+	}
+	
+	public SalesforceOrg(String organizationId, String accessToken, String refreshToken, String clientId,
+			String clientSecret, String identityUrl, String instanceUrl, String issuedAt, User user) {
+		super();
+		this.organizationId = organizationId;
+		this.accessToken = accessToken;
+		this.refreshToken = refreshToken;
+		this.clientId = clientId;
+		this.clientSecret = clientSecret;
+		this.identityUrl = identityUrl;
+		this.instanceUrl = instanceUrl;
+		this.issuedAt = issuedAt;
+		this.user = user;
+	}
 
 	public SalesforceOrg(String organizationId, String accessToken, String refreshToken, String clientId,
 			String clientSecret, String identityUrl, String instanceUrl, String issuedAt) {
@@ -51,11 +76,15 @@ public class SalesforceOrg {
 		this.instanceUrl = instanceUrl;
 		this.issuedAt = issuedAt;
 	}
-
-	public SalesforceOrg() {
-		
-	}
 	
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
 	public String getOrganizationId() {
 		return organizationId;
 	}

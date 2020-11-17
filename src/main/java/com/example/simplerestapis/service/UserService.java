@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.simplerestapis.models.User;
+import com.example.simplerestapis.models.userCredentials;
 import com.example.simplerestapis.repository.UserRepository;
 
 @Service
@@ -24,6 +25,10 @@ public class UserService {
 	
 	public User getUserById(int id) {
 		return repository.findById(id).orElse(null);
+	}
+	
+	public User validateUser(userCredentials user) {
+		return repository.findByEmail(user.email);
 	}
 	
 	public String deleteUser(int id) {

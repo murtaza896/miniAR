@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.example.simplerestapis.models.SalesforceOrg;
+import com.example.simplerestapis.models.User;
 import com.example.simplerestapis.repository.SalesforceOrgRepository;
 import com.example.simplerestapis.repository.UserRepository;
 
@@ -72,7 +73,6 @@ public class SalesforceService {
 		String issuedAt;
 		String identityUrl;
 		String instanceUrl;
-		
 		RestTemplate restTemplate = new RestTemplate();
 
 		HttpHeaders headers = new HttpHeaders();

@@ -9,7 +9,7 @@ import com.example.simplerestapis.models.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-	
+	User findByEmail(String email);
 }
 
 
