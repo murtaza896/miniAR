@@ -50,8 +50,8 @@ public class SalesforceOrg {
 		this.organizationId = organizationId;
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;
-		this.clientId = clientId;
-		this.clientSecret = clientSecret;
+//		this.clientId = clientId;
+//		this.clientSecret = clientSecret;
 		this.identityUrl = identityUrl;
 		this.instanceUrl = instanceUrl;
 		this.issuedAt = issuedAt;

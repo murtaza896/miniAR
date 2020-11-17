@@ -9,8 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -39,21 +38,11 @@ public class GitController {
 
 	@RequestMapping(value = "/list-commits", method = RequestMethod.GET)
 	public String showGits(ModelMap model) {
-		String name = getLoggedInUserName(model);
-		model.put("commits", gitService.getGitsByUser(name));
 		// model.put("todos", service.retrieveTodos(name));
 		return "list-commits";
 	}
 
-	private String getLoggedInUserName(ModelMap model) {
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-		if (principal instanceof UserDetails) {
-			return ((UserDetails) principal).getUsername();
-		}
-
-		return principal.toString();
-	}
 
 	@RequestMapping(value = "/add-commit", method = RequestMethod.GET)
 	public String showAddGitPage(ModelMap model) {
