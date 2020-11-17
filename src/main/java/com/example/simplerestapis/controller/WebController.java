@@ -31,6 +31,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.example.simplerestapis.models.SalesforceOrg;
 import com.example.simplerestapis.models.User;
 import com.example.simplerestapis.service.FileBasedDeployAndRetrieve;
+import com.example.simplerestapis.service.GitStoreService;
 import com.example.simplerestapis.service.SalesforceService;
 import com.example.simplerestapis.service.UserService;
 
@@ -48,6 +49,9 @@ public class WebController {
 	private SalesforceService SFservice;
 	
 	@Autowired
+	private GitStoreService gitStoreService;
+	
+	@Autowired
 	private FileBasedDeployAndRetrieve fbd;
 	
 		
@@ -58,17 +62,31 @@ public class WebController {
 		return mv;
 	}
 	
-	@GetMapping("/new")
-	public ModelAndView authorized(@RequestParam String code) 
+	@GetMapping("/new-org")
+	public String authorizeOrg(@RequestParam(required = false) String code) 
 	{
-		String organizationId = SFservice.authenticateOrg(code);
+		String organizationId = SFservice.authorizeOrg(code);
 		
-		ModelAndView mv = new ModelAndView();
-		mv.addObject("orgId",organizationId );
-		mv.setViewName("retrieve");
-		return mv;
+//		ModelAndView mv = new ModelAndView();
+//		mv.addObject("orgId",organizationId );
+//		mv.setViewName("retrieve");
+		return organizationId;
+	
 	}
 
+	
+	@GetMapping("/new-repo")
+	public String authorizeGitAcc(@RequestParam String code) {
+		
+		return gitStoreService.authorizeGitAcc(code);
+		
+	}
+	
+	@GetMapping("/list-repo")
+	public String listRepos()
+	{
+		return "I am authorized";
+	}
 	
 	@GetMapping("/retrieve/{orgId}")
 	public ModelAndView retrieveData(@PathVariable String orgId) {
@@ -93,6 +111,8 @@ public class WebController {
 		}
 		return mv;
 	}
+	
+	
 	
 //	@RequestMapping("/get-all-users")
 //	public List<User> getAllUsers() 
