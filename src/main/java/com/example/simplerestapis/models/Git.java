@@ -17,9 +17,7 @@ public class Git {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 
-
-
-
+	
 	private String username;
 
 	private String password;
@@ -27,6 +25,8 @@ public class Git {
 	private String repoURL;
 	
 	private String message;
+	
+	
 	
 	public Git() {
 		super();

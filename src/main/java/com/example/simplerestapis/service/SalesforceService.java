@@ -82,7 +82,7 @@ public class SalesforceService {
 		
 		MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
 		map.add("client_id", clientId);
-		map.add("redirect_uri", "http://localhost:8080/new");
+		map.add("redirect_uri", "http://localhost:8080/new-org");
 		map.add("client_secret", clientSecret);
 		map.add("code", code);
 		map.add("grant_type", "authorization_code");
