@@ -1,43 +1,34 @@
 package com.example.simplerestapis.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.util.ArrayList;
 
-import org.apache.tomcat.util.json.JSONParser;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.method.annotation.UriComponentsBuilderMethodArgumentResolver;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import com.example.simplerestapis.models.SalesforceOrg;
-import com.example.simplerestapis.models.User;
 import com.example.simplerestapis.service.FileBasedDeployAndRetrieve;
 import com.example.simplerestapis.service.GitStoreService;
 import com.example.simplerestapis.service.SalesforceService;
 import com.example.simplerestapis.service.UserService;
-
-import ch.qos.logback.classic.Logger;
-import java.sql.Timestamp;    
-import java.util.Date;
 
 @RestController
 public class WebController {
@@ -62,24 +53,59 @@ public class WebController {
 		return mv;
 	}
 	
+	@CrossOrigin("*")
 	@GetMapping("/new-org")
 	public String authorizeOrg(@RequestParam(required = false) String code) 
 	{
-		String organizationId = SFservice.authorizeOrg(code);
-		
+		return SFservice.authorizeOrg(code);
+	}
+
+//	@GetMapping("/showRepos")
+//	public ArrayList<String> showRepos() throws Exception {
+//		URL url = new URL("https://api.github.com/user/repos");
+//        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//        conn.setRequestProperty("Authorization","Bearer "+"3b32577b36090b71ef53cf0a4ea39856168291ec");
+//        conn.setRequestProperty("Content-Type","application/json");
+//        conn.setRequestMethod("GET");
+//        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//        String output;
+//
+//        StringBuffer response = new StringBuffer();
+//        while ((output = in.readLine()) != null) {
+//            response.append(output);
+//        }
+//        JSONArray jsonArr = new JSONArray(response.toString());
+//        JSONArray result = new JSONArray();
+//        ArrayList<String> array = new ArrayList<String>();
+//        System.out.println(jsonArr);
+//       for (int i = 0; i < jsonArr.length(); i++)
+//        {
+//            JSONObject jsonObj = jsonArr.getJSONObject(i);
+//            array.add(jsonObj.getString("svn_url"));           
+//            System.out.println(jsonObj.getString("svn_url"));
+//       }
+//        in.close();
+//        
+//        return array;
+//		
+//	}
+	
+//	@GetMapping("/new-org")
+//	public ModelAndView authorized(@RequestParam String code) 
+//	{
+//		String organizationId = SFservice.authorizeOrg(code);
+//		
 //		ModelAndView mv = new ModelAndView();
 //		mv.addObject("orgId",organizationId );
 //		mv.setViewName("retrieve");
-		return organizationId;
-	
-	}
+//		return organizationId;
+//	
+//	}
 
 	
 	@GetMapping("/new-repo")
 	public String authorizeGitAcc(@RequestParam String code) {
-		
 		return gitStoreService.authorizeGitAcc(code);
-		
 	}
 	
 	@GetMapping("/list-repo")
@@ -112,36 +138,6 @@ public class WebController {
 		return mv;
 	}
 	
-	
-	
-//	@RequestMapping("/get-all-users")
-//	public List<User> getAllUsers() 
-//	{
-//		return service.getAllUsers();
-//	}
-//	
-//	@GetMapping("/get-user/{id}")
-//	public User getUserById(@PathVariable int id) 
-//	{
-//		return service.getUserById(id);
-//	}
-//	
-//	@PostMapping("/add-user")
-//	public User addUser(@RequestBody User inputPayload) {
-//		return service.addUser(inputPayload);
-//	}
-//	
-//	@PutMapping("/update-user")
-//	public User updateUser(@RequestBody User new_user) 
-//	{
-//		return  service.updateUser(new_user);
-//	}
-//	
-//	@DeleteMapping("/delete-user")
-//	public String deleteUser(@RequestParam int id) 
-//	{
-//		return service.deleteUser(id);
-//	}
 }
 
 

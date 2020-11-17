@@ -1,0 +1,15 @@
+
+<nav role="navigation" class="navbar navbar-default">
+	<div class="">
+		<a href="#" class="navbar-brand"><span style="color:#00a8eb">Auto</span><span style="color:#ff9d4c">Buds</span><span style="color:#ff9d4c">3</span></a>
+	</div>
+	<div class="navbar-collapse">
+		<ul class="nav navbar-nav">
+			<li class="active"><a href="/">Home</a></li>
+		<!--  	<li><a href="/list-commits">VersionControl Commit</a></li> -->
+		</ul>
+		<ul class="nav navbar-nav">
+			<li><a href="/logout">Logout</a></li>
+		</ul>
+	</div>
+</nav>

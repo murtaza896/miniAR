@@ -42,11 +42,12 @@ public class SalesforceService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-		String url = "https://login.salesforce.com/services/oauth2/token";
+//		String url = "https://login.salesforce.com/services/oauth2/token";
+		String url = env.getProperty("app.sf.access_token.uri");
 
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.add("client_id", env.getProperty("app.sf.client_id"));
-		map.add("redirect_uri", "http://localhost:8080/authorized");
+		map.add("redirect_uri", env.getProperty("app.sf.redirect.uri2"));
 		map.add("client_secret", env.getProperty("app.sf.client_secret"));
 		map.add("refresh_token", sfOrg.getRefreshToken());
 		map.add("grant_type", "refresh_token");
@@ -77,11 +78,14 @@ public class SalesforceService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-		String url = "https://login.salesforce.com/services/oauth2/token";
+//		String url = "https://login.salesforce.com/services/oauth2/token";
+		String url = env.getProperty("app.sf.access_token.uri");
 
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.add("client_id", clientId);
+
 		map.add("redirect_uri", env.getProperty("app.sf.redirect.uri2"));
+
 		map.add("client_secret", clientSecret);
 		map.add("code", code);
 		map.add("grant_type", "authorization_code");
