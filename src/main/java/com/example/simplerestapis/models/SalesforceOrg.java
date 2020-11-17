@@ -44,14 +44,12 @@ public class SalesforceOrg {
 		
 	}
 	
-	public SalesforceOrg(String organizationId, String accessToken, String refreshToken, String clientId,
-			String clientSecret, String identityUrl, String instanceUrl, String issuedAt, User user) {
+	public SalesforceOrg(String organizationId, String accessToken, String refreshToken, 
+			String identityUrl, String instanceUrl, String issuedAt, User user) {
 		super();
 		this.organizationId = organizationId;
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;
-		this.clientId = clientId;
-		this.clientSecret = clientSecret;
 		this.identityUrl = identityUrl;
 		this.instanceUrl = instanceUrl;
 		this.issuedAt = issuedAt;

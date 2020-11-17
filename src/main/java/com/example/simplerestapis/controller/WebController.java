@@ -72,7 +72,9 @@ public class WebController {
 	}
 	
 	@GetMapping("/xyz")
-	public String xyz(HttpServletRequest request) {
+	public String xyz(HttpServletRequest request , HttpServletResponse response) {
+		Cookie cookie = new Cookie("user_id", "1");
+		response.addCookie(cookie);
 		Cookie cookies[] = request.getCookies();
 		for(Cookie c : cookies) {
 			if(c.getName().equals("user_id"))
@@ -82,12 +84,12 @@ public class WebController {
 		return "";
 	}
 	
+	
 
-	@CrossOrigin("*")
 	@GetMapping("/new-org")
-	public String authorizeOrg(@RequestParam(required = false) String code) 
+	public String authorizeOrg(@RequestParam(required = false) String code, HttpServletRequest request) 
 	{
-		return SFservice.authorizeOrg(code);
+		return SFservice.authorizeOrg(code, request);
 	}
 
 //	@GetMapping("/showRepos")

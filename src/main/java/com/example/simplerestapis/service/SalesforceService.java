@@ -1,5 +1,10 @@
 package com.example.simplerestapis.service;
 
+import java.util.Optional;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -23,6 +28,9 @@ public class SalesforceService {
 
 	@Autowired
 	private SalesforceOrgRepository repository;
+	
+	@Autowired
+	private UserService service;
 
 	@Autowired
 	private Environment env;
@@ -63,7 +71,7 @@ public class SalesforceService {
 		return token;
 	}
 
-	public String authorizeOrg(String code) {
+	public String authorizeOrg(String code, HttpServletRequest rqst) {
 
 		String accessToken;
 		String refreshToken;
@@ -84,7 +92,7 @@ public class SalesforceService {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.add("client_id", clientId);
 
-		map.add("redirect_uri", env.getProperty("app.sf.redirect.uri2"));
+		map.add("redirect_uri", env.getProperty("app.sf.redirect.uri"));
 
 		map.add("client_secret", clientSecret);
 		map.add("code", code);
@@ -112,14 +120,22 @@ public class SalesforceService {
 		String response2 = restTemplate.getForObject(builder.build().encode().toUriString(), String.class, vars);
 		JSONObject obj2 = new JSONObject(response2);
 
+		
 		organizationId = obj2.getString("organization_id");
-
+		
+		String user_id = null;
+		Cookie cookies[] = rqst.getCookies();
+		for(Cookie c: cookies) {
+			if(c.getName().equals("user_id")) {
+				user_id = c.getValue();
+			}
+		}
+		if(user_id.equals(null)) return null;
+		User user = service.getUserById(Integer.parseInt(user_id));
 		SalesforceOrg org = new SalesforceOrg(organizationId, accessToken, refreshToken, identityUrl, instanceUrl,
-				issuedAt);
+				issuedAt,user);
 		this.addOrg(org);
-
 		return organizationId;
 
 	}
-
 }
