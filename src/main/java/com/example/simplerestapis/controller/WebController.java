@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-
+import com.example.simplerestapis.models.GitRepo;
 import com.example.simplerestapis.models.User;
 import com.example.simplerestapis.models.userCredentials;
 import com.example.simplerestapis.service.FileBasedDeployAndRetrieve;
@@ -140,10 +140,10 @@ public class WebController {
 		return gitStoreService.authorizeGitAcc(code);
 	}
 	
-	@GetMapping("/list-repo")
-	public String listRepos()
-	{
-		return "I am authorized";
+	@GetMapping("/list-repo/{accessToken}")
+	public ArrayList<GitRepo> listRepos(@PathVariable String accessToken)
+	{	
+		return gitStoreService.listRepos(accessToken);
 	}
 	
 	@GetMapping("/retrieve/{orgId}")
