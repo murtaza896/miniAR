@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.example.simplerestapis.models.GitRepo;
 import com.example.simplerestapis.service.FileBasedDeployAndRetrieve;
 import com.example.simplerestapis.service.GitStoreService;
 import com.example.simplerestapis.service.SalesforceService;
@@ -57,6 +58,11 @@ public class WebController {
 	@GetMapping("/new-org")
 	public String authorizeOrg(@RequestParam(required = false) String code) 
 	{
+		if(code.isEmpty())
+		{
+			return "I am authorized";
+		}
+		
 		return SFservice.authorizeOrg(code);
 	}
 
@@ -108,10 +114,10 @@ public class WebController {
 		return gitStoreService.authorizeGitAcc(code);
 	}
 	
-	@GetMapping("/list-repo")
-	public String listRepos()
-	{
-		return "I am authorized";
+	@GetMapping("/list-repo/{accessToken}")
+	public ArrayList<GitRepo> listRepos(@PathVariable String accessToken)
+	{	
+		return gitStoreService.listRepos(accessToken);
 	}
 	
 	@GetMapping("/retrieve/{orgId}")

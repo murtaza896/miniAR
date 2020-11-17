@@ -84,7 +84,7 @@ public class SalesforceService {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.add("client_id", clientId);
 
-		map.add("redirect_uri", env.getProperty("app.sf.redirect.uri2"));
+		map.add("redirect_uri", env.getProperty("app.sf.redirect.uri"));
 
 		map.add("client_secret", clientSecret);
 		map.add("code", code);
