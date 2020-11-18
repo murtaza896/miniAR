@@ -73,15 +73,15 @@ public class SalesforceService {
 	}
 
 	public String authorizeOrg(String code, HttpServletRequest rqst) {
-
-		String accessToken;
-		String refreshToken;
+		
+		String accessToken = "";
+		String refreshToken = "";
 		String clientId = env.getProperty("app.sf.client_id");
 		String clientSecret = env.getProperty("app.sf.client_secret");
-		String organizationId;
-		String issuedAt;
-		String identityUrl;
-		String instanceUrl;
+		String organizationId = "";
+		String issuedAt = "";
+		String identityUrl = "";
+		String instanceUrl = "";
 		RestTemplate restTemplate = new RestTemplate();
 
 		HttpHeaders headers = new HttpHeaders();
@@ -101,15 +101,21 @@ public class SalesforceService {
 
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 
-		ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
-		JSONObject obj = new JSONObject(response.getBody());
-
-		accessToken = obj.getString("access_token");
-		refreshToken = obj.getString("refresh_token");
-		instanceUrl = obj.getString("instance_url");
-		identityUrl = obj.getString("id");
-		issuedAt = obj.getString("issued_at");
-
+		try 
+		{
+			ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+			JSONObject obj = new JSONObject(response.getBody());
+			
+			accessToken = obj.getString("access_token");
+			refreshToken = obj.getString("refresh_token");
+			instanceUrl = obj.getString("instance_url");
+			identityUrl = obj.getString("id");
+			issuedAt = obj.getString("issued_at");
+		}
+		catch(Exception e) {
+			System.out.println("Failed to get Access Token: \n" + e);
+		}
+		
 		String url2 = identityUrl;
 		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url2);
 
@@ -118,18 +124,26 @@ public class SalesforceService {
 		vars.add("format", "json");
 		builder.queryParams(vars);
 
-		String response2 = restTemplate.getForObject(builder.build().encode().toUriString(), String.class, vars);
-		JSONObject obj2 = new JSONObject(response2);
-
+		try 
+		{
+			String response2 = restTemplate.getForObject(builder.build().encode().toUriString(), String.class, vars);
+			JSONObject obj2 = new JSONObject(response2);
+			organizationId = obj2.getString("organization_id");
+		}
+		catch(Exception e) 
+		{
+			System.out.println("Failed to fetch org details: \n" + e);
+		}
 		
-		organizationId = obj2.getString("organization_id");
 		String user_id = null;
 		user_id = this.readCookie(rqst, "user_id");
 		if(user_id.equals(null)) return null;
+		
 		User user = service.getUserById(Integer.parseInt(user_id));
 		SalesforceOrg org = new SalesforceOrg(organizationId, accessToken, refreshToken, identityUrl, instanceUrl,
 				issuedAt,user);
 		this.addOrg(org);
+		
 		return organizationId;
 
 	}

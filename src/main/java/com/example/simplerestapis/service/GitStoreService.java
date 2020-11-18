@@ -54,7 +54,7 @@ public class GitStoreService {
 		{
 			JSONObject temp = obj2.getJSONObject(i);
 			System.out.println(temp.getInt("id"));
-			GitStore tempRepo = new GitStore(temp.getInt("id") + "", temp.getString("name"), temp.getString("html_url"), obj3.getString("login"), user, null);
+			GitStore tempRepo = new GitStore(temp.getInt("id") + "", temp.getString("html_url"), temp.getString("name"), obj3.getString("login"), user, null);
 			res.add(tempRepo);
 		}
 		System.out.println(res);

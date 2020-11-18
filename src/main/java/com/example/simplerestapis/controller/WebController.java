@@ -30,7 +30,7 @@ import com.example.simplerestapis.service.UserService;
 public class WebController {
 			
 	@Autowired
-	private UserService service;
+	private UserService userService;
 	
 	@Autowired
 	private SalesforceService SFservice;
@@ -44,35 +44,26 @@ public class WebController {
 	@Autowired
 	private GitAccountsService gitAccountsService;
 	
-	@GetMapping("/")
-	public ModelAndView welcome() {
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("index");
-		return mv;
+	@GetMapping("/check-existence")
+	public int checkExistence(@RequestParam(name="email") String email)
+	{
+		return userService.checkExistence(email);
+		// -1: not exists, 1: exists
 	}
 	
-	
-	@PostMapping("/register")
-	public User register(@RequestBody User user) {
-		return service.addUser(user);
+	@PostMapping("/sign-up")
+	public User signUp(@RequestBody User user) {
+		return userService.addUser(user);
 	}
 	
 	@PostMapping("/login")
-	public User login(@RequestBody userCredentials user, HttpServletResponse response) {
-		User user1= service.validateUser(user);
-		if(user1 != null && user1.getPassword().equals(user.password)) {
-			System.out.println(user1.toString());
-			Cookie cookie = new Cookie("user_id", String.valueOf(user1.getId()));
-			
-			response.addCookie(cookie);
-			return user1;
-		}
-		return null;
+	public int login(@RequestBody userCredentials user, HttpServletResponse response) {
+		return userService.validateUser(user, response);
 	}
-	
-	@GetMapping("/addCookies")
-	public String xyz(HttpServletRequest request , HttpServletResponse response) {
-		Cookie cookie = new Cookie("user_id", "1");
+
+	@GetMapping("/add-user-id/{id}")
+	public String xyz(@RequestParam String id, HttpServletRequest request , HttpServletResponse response) {
+		Cookie cookie = new Cookie("user_id", id);
 		response.addCookie(cookie);
 		Cookie cookies[] = request.getCookies();
 		for(Cookie c : cookies) {

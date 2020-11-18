@@ -2,6 +2,9 @@ package com.example.simplerestapis.service;
 
 import java.util.List;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,8 +30,35 @@ public class UserService {
 		return repository.findById(id).orElse(null);
 	}
 	
-	public User validateUser(userCredentials user) {
-		return repository.findByEmail(user.email);
+	public int checkExistence(String email) 
+	{
+		User userRecord = repository.findByEmail(email);
+		
+		if(userRecord == null)
+		{
+			return -1;
+		}
+		
+		return 1;
+	}
+	
+ 	public int validateUser(userCredentials user, HttpServletResponse response) {
+		
+ 		User userRecord = repository.findByEmail(user.email);
+		
+		if(userRecord == null)
+		{
+			return -1;
+		}
+		
+		else if(userRecord.getPassword().equals(user.password)) 
+		{
+			Cookie cookie = new Cookie("user_id", String.valueOf(userRecord.getId()));
+			response.addCookie(cookie);
+			return userRecord.getId();
+		}
+		
+		return 0;
 	}
 	
 	public String deleteUser(int id) {
