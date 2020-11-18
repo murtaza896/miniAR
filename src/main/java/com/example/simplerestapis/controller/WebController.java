@@ -1,11 +1,5 @@
 package com.example.simplerestapis.controller;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,8 +7,6 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +20,6 @@ import com.example.simplerestapis.models.GitStore;
 import com.example.simplerestapis.models.SalesforceOrg;
 import com.example.simplerestapis.models.User;
 import com.example.simplerestapis.models.userCredentials;
-import com.example.simplerestapis.repository.GitAccountsRepository;
 import com.example.simplerestapis.service.FileBasedDeployAndRetrieve;
 import com.example.simplerestapis.service.GitAccountsService;
 import com.example.simplerestapis.service.GitStoreService;
@@ -79,7 +70,7 @@ public class WebController {
 		return null;
 	}
 	
-	@GetMapping("/xyz")
+	@GetMapping("/addToken")
 	public String xyz(HttpServletRequest request , HttpServletResponse response) {
 		Cookie cookie = new Cookie("user_id", "1");
 		response.addCookie(cookie);
@@ -116,35 +107,6 @@ public class WebController {
 		return res;
 	}
 
-//	@GetMapping("/showRepos")
-//	public ArrayList<String> showRepos() throws Exception {
-//		URL url = new URL("https://api.github.com/user/repos");
-//        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//        conn.setRequestProperty("Authorization","Bearer "+"3b32577b36090b71ef53cf0a4ea39856168291ec");
-//        conn.setRequestProperty("Content-Type","application/json");
-//        conn.setRequestMethod("GET");
-//        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//        String output;
-//
-//        StringBuffer response = new StringBuffer();
-//        while ((output = in.readLine()) != null) {
-//            response.append(output);
-//        }
-//        JSONArray jsonArr = new JSONArray(response.toString());
-//        JSONArray result = new JSONArray();
-//        ArrayList<String> array = new ArrayList<String>();
-//        System.out.println(jsonArr);
-//       for (int i = 0; i < jsonArr.length(); i++)
-//        {
-//            JSONObject jsonObj = jsonArr.getJSONObject(i);
-//            array.add(jsonObj.getString("svn_url"));           
-//            System.out.println(jsonObj.getString("svn_url"));
-//       }
-//        in.close();
-//        
-//        return array;
-//		
-//	}
 	
 //	@GetMapping("/new-org")
 //	public ModelAndView authorized(@RequestParam String code) 
@@ -174,18 +136,18 @@ public class WebController {
 	
 	
 	@CrossOrigin("https://localhost:4200")
-	@GetMapping("/list-repo/{accessToken}")
-	public ArrayList<GitStore> listRepos(@PathVariable String accessToken, HttpServletRequest request)
+	@GetMapping("/list-repos/{accountId}")
+	public ArrayList<GitStore> listRepos(@PathVariable int accountId, HttpServletRequest request)
 	{	
 		String userId = SFservice.readCookie(request, "user_id");
-		return gitStoreService.listRepos(accessToken, Integer.parseInt(userId));
+		return gitStoreService.listRepos(accountId, Integer.parseInt(userId));
 	}
 	
-	@GetMapping("/list-mapped-repos/{org_id}")
-	public ArrayList<Map<String, String>> listMappedRepos(@PathVariable String org_id)
-	{	
-		return gitStoreService.listMappedRepos(org_id);
-	}
+//	@GetMapping("/list-mapped-repos/{org_id}")
+//	public ArrayList<Map<String, String>> listMappedRepos(@PathVariable String org_id)
+//	{	
+//		return gitStoreService.listMappedRepos(org_id);
+//	}
 	
 	@GetMapping("/retrieve/{orgId}")
 	public ModelAndView retrieveData(@PathVariable String orgId) {

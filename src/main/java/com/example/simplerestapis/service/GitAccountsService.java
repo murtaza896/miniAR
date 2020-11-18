@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import com.example.simplerestapis.models.GitAccounts;
 import com.example.simplerestapis.models.User;
 import com.example.simplerestapis.repository.GitAccountsRepository;
+import com.sforce.soap.enterprise.sobject.GtwyProvPaymentMethodType;
 
 @Service
 public class GitAccountsService {
@@ -27,6 +28,10 @@ public class GitAccountsService {
 	
 	@Autowired
 	private UserService userService;
+	
+	public GitAccounts getUserById(int id) {
+		return gitAccountsRepository.findById(id).orElse(null);
+	}
 	
 	public int authorizeGitAcc(String code, String userId) {
 		int accId;

@@ -1,9 +1,6 @@
 package com.example.simplerestapis.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,42 +11,32 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import com.example.simplerestapis.models.GitAccounts;
 import com.example.simplerestapis.models.GitStore;
 import com.example.simplerestapis.models.User;
-import com.example.simplerestapis.repository.GitStoreRepository;
-import com.example.simplerestapis.repository.UserRepository;
 
 @Service
 public class GitStoreService {
-	
-	@Autowired
-	private GitStoreRepository repository;
 	
 	@Autowired 
 	private UserService userService;
 	
 	@Autowired
+	private GitAccountsService gitAccountsService;
+	
+	@Autowired
 	private Environment env;
 	
-	public GitStore addRepo(GitStore obj) {
-		return repository.save(obj);
-	}
 
-	public GitStore getRepo(String repoId) {
-		return repository.findById(repoId).orElse(null);
-	}
-
-	public ArrayList<GitStore> listRepos(String accessToken, int user_id) {
+	public ArrayList<GitStore> listRepos(int accountId, int user_id) {
 		RestTemplate restTemplate = new RestTemplate();
 		String url2 = env.getProperty("app.git.getrepos.uri");
 		String url3 = env.getProperty("app.git.getuser.uri");
-		
+		GitAccounts account = gitAccountsService.getUserById(accountId);
 		HttpHeaders headers2 = new HttpHeaders();
 		headers2.setContentType(MediaType.APPLICATION_JSON);
-		headers2.set("Authorization","Bearer " + accessToken);
+		headers2.set("Authorization","Bearer " + account.getAccess_token());
 		
 		HttpEntity<String> request2 = new HttpEntity<String>(headers2);
 
@@ -68,23 +55,22 @@ public class GitStoreService {
 			JSONObject temp = obj2.getJSONObject(i);
 			System.out.println(temp.getInt("id"));
 			GitStore tempRepo = new GitStore(temp.getInt("id") + "", temp.getString("name"), temp.getString("html_url"), obj3.getString("login"), user, null);
-			
 			res.add(tempRepo);
 		}
-		
+		System.out.println(res);
 		return res;
 	}
 	
-	public ArrayList<Map<String,String>> listMappedRepos(String orgId){
-		ArrayList<GitStore> repoList= repository.findByorg_id(orgId);
-		ArrayList<Map<String, String>> res = new ArrayList<Map<String,String>>();
-		for(GitStore repo : repoList) {
-			Map<String, String> mp = new HashMap<String, String>();
-			mp.put("repo_id", repo.getRepoId());
-			mp.put("repo_label", repo.getRepoName());
-			res.add(mp);
-		}
-		return res;
-	}
+//	public ArrayList<Map<String,String>> listMappedRepos(String orgId){
+//		ArrayList<GitStore> repoList= repository.findByorg_id(orgId);
+//		ArrayList<Map<String, String>> res = new ArrayList<Map<String,String>>();
+//		for(GitStore repo : repoList) {
+//			Map<String, String> mp = new HashMap<String, String>();
+//			mp.put("repo_id", repo.getRepoId());
+//			mp.put("repo_label", repo.getRepoName());
+//			res.add(mp);
+//		}
+//		return res;
+//	}
 }
 

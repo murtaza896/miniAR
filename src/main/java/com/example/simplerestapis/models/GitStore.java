@@ -10,36 +10,14 @@ import javax.persistence.Table;
 
 import com.sun.istack.NotNull;
 
-@Entity
-@Table(name="git_store")
 public class GitStore {
 	
-	@Id
-	@NotNull
-	@Column(name="repo_id")
 	String repoId;
-
-	
-	@Column(name="repo_url")
 	String repoUrl;
-	
-	@Column(name="repo_name")
 	String repoName;
-
-	@Column(name = "username")
 	String username;
-	
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "user_id")
 	private User user;
-	
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "org_id")
 	private SalesforceOrg org;
-	
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "account_id")
-	private GitAccounts account;
 	
 	public GitStore(String repoId, String repoUrl, String repoName, String username, User user,
 			SalesforceOrg org) {
