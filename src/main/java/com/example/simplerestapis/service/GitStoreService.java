@@ -14,13 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.example.simplerestapis.models.GitAccounts;
 import com.example.simplerestapis.models.GitStore;
-import com.example.simplerestapis.models.User;
 
 @Service
 public class GitStoreService {
-	
-	@Autowired 
-	private UserService userService;
 	
 	@Autowired
 	private GitAccountsService gitAccountsService;
@@ -29,7 +25,7 @@ public class GitStoreService {
 	private Environment env;
 	
 
-	public ArrayList<GitStore> listRepos(int accountId, int user_id) {
+	public ArrayList<GitStore> listRepos(int accountId, int userId) {
 		RestTemplate restTemplate = new RestTemplate();
 		String url2 = env.getProperty("app.git.getrepos.uri");
 		String url3 = env.getProperty("app.git.getuser.uri");
@@ -47,14 +43,11 @@ public class GitStoreService {
 		JSONArray obj2 = new JSONArray(response2.getBody());
 		JSONObject obj3 = new JSONObject(response3.getBody());
 		ArrayList<GitStore> res = new ArrayList<GitStore>();
-		
-		
-		User user = userService.getUserById(user_id);
 		for(int i = 0; i < obj2.length(); i++ )
 		{
 			JSONObject temp = obj2.getJSONObject(i);
 			System.out.println(temp.getInt("id"));
-			GitStore tempRepo = new GitStore(temp.getInt("id") + "", temp.getString("html_url"), temp.getString("name"), obj3.getString("login"), user, null);
+			GitStore tempRepo = new GitStore(temp.getInt("id") + "", temp.getString("html_url"), temp.getString("name"), obj3.getString("login"), userId);
 			res.add(tempRepo);
 		}
 		System.out.println(res);

@@ -1,7 +1,5 @@
 package com.example.simplerestapis.models;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,6 +34,28 @@ public class SalesforceOrg {
 	@Column(name="issued_at")
 	String issuedAt;
 	
+	@Column(name="username")
+	String username;
+	
+	@Column(name = "nick_name")
+	String nickName;
+	
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "user_id")
 	private User user;
@@ -44,27 +64,6 @@ public class SalesforceOrg {
 		
 	}
 	
-	public SalesforceOrg(String organizationId, String accessToken, String refreshToken, 
-			String identityUrl, String instanceUrl, String issuedAt, User user) {
-		super();
-		this.id = organizationId;
-		this.accessToken = accessToken;
-		this.refreshToken = refreshToken;
-		this.identityUrl = identityUrl;
-		this.instanceUrl = instanceUrl;
-		this.issuedAt = issuedAt;
-		this.user = user;
-	}
-
-	public SalesforceOrg(String organizationId, String accessToken, String refreshToken, String identityUrl, String instanceUrl, String issuedAt) {
-		super();
-		this.id = organizationId;
-		this.accessToken = accessToken;
-		this.refreshToken = refreshToken;
-		this.identityUrl = identityUrl;
-		this.instanceUrl = instanceUrl;
-		this.issuedAt = issuedAt;
-	}
 	
 	public User getUser() {
 		return user;
@@ -122,6 +121,33 @@ public class SalesforceOrg {
 
 	public void setIssuedAt(String issuedAt) {
 		this.issuedAt = issuedAt;
+	}
+
+	public SalesforceOrg(String id, String accessToken, String refreshToken, String identityUrl, String instanceUrl,
+			String issuedAt, String username, String nickName, User user) {
+		super();
+		this.id = id;
+		this.accessToken = accessToken;
+		this.refreshToken = refreshToken;
+		this.identityUrl = identityUrl;
+		this.instanceUrl = instanceUrl;
+		this.issuedAt = issuedAt;
+		this.username = username;
+		this.nickName = nickName;
+		this.user = user;
+	}
+
+	public SalesforceOrg(String id, String accessToken, String refreshToken, String identityUrl, String instanceUrl,
+			String issuedAt, String username, String nickName) {
+		super();
+		this.id = id;
+		this.accessToken = accessToken;
+		this.refreshToken = refreshToken;
+		this.identityUrl = identityUrl;
+		this.instanceUrl = instanceUrl;
+		this.issuedAt = issuedAt;
+		this.username = username;
+		this.nickName = nickName;
 	}
 	
 	

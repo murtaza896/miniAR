@@ -1,11 +1,10 @@
 package com.example.simplerestapis.service;
 
 import java.util.ArrayList;
-import java.util.Optional;
-
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -18,11 +17,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-
 import com.example.simplerestapis.models.SalesforceOrg;
 import com.example.simplerestapis.models.User;
 import com.example.simplerestapis.repository.SalesforceOrgRepository;
-import com.example.simplerestapis.repository.UserRepository;
 
 @Service
 public class SalesforceService {
@@ -82,6 +79,8 @@ public class SalesforceService {
 		String issuedAt = "";
 		String identityUrl = "";
 		String instanceUrl = "";
+		String username = "";
+		String nickName = "";
 		RestTemplate restTemplate = new RestTemplate();
 
 		HttpHeaders headers = new HttpHeaders();
@@ -129,6 +128,8 @@ public class SalesforceService {
 			String response2 = restTemplate.getForObject(builder.build().encode().toUriString(), String.class, vars);
 			JSONObject obj2 = new JSONObject(response2);
 			organizationId = obj2.getString("organization_id");
+			username = obj2.getString("username");
+			nickName = obj2.getString("nick_name");
 		}
 		catch(Exception e) 
 		{
@@ -141,7 +142,7 @@ public class SalesforceService {
 		
 		User user = service.getUserById(Integer.parseInt(user_id));
 		SalesforceOrg org = new SalesforceOrg(organizationId, accessToken, refreshToken, identityUrl, instanceUrl,
-				issuedAt,user);
+				issuedAt, username , nickName, user);
 		this.addOrg(org);
 		
 		return organizationId;
@@ -151,6 +152,7 @@ public class SalesforceService {
 	public String readCookie(HttpServletRequest request , String key) {
 		String value = null;
 		Cookie cookies[] = request.getCookies();
+		if(cookies == null ||  cookies.length == 0) return null;
 		for(Cookie c: cookies) {
 			if(c.getName().equals(key)) {
 				value = c.getValue();
@@ -159,7 +161,18 @@ public class SalesforceService {
 		return value;
 	}
 	
-	public ArrayList<SalesforceOrg> getOrgList(String user_id) {
-		return repository.findByuser_id(Integer.parseInt(user_id));
+	public ArrayList<Map<String, String >> getOrgList(String user_id) {
+		ArrayList<Map<String, String >> res = new ArrayList<Map<String,String>>();
+		ArrayList<SalesforceOrg> sfOrgs = repository.findByuser_id(Integer.parseInt(user_id));
+		for(SalesforceOrg sfOrg : sfOrgs) {
+			Map<String, String > mp = new HashMap<String, String>();
+			mp.put("org_id", sfOrg.getId());
+			mp.put("org_label", sfOrg.getInstanceUrl().substring(8));
+			mp.put("username" , sfOrg.getUsername());
+			System.out.println(sfOrg.getUsername());
+			mp.put("nick_name", sfOrg.getNickName());
+			res.add(mp);
+		}
+		return res;
 	}
 }

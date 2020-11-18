@@ -18,23 +18,17 @@ import java.nio.channels.WritableByteChannel;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
 import com.example.simplerestapis.models.SalesforceOrg;
 import com.sforce.soap.metadata.*;
-import com.sforce.ws.ConnectionException;
 import com.sforce.ws.ConnectorConfig;
 
 @Service

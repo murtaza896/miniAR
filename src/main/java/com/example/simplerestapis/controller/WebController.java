@@ -1,9 +1,7 @@
 package com.example.simplerestapis.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import com.example.simplerestapis.models.GitAccounts;
 import com.example.simplerestapis.models.GitStore;
-import com.example.simplerestapis.models.SalesforceOrg;
 import com.example.simplerestapis.models.User;
 import com.example.simplerestapis.models.userCredentials;
 import com.example.simplerestapis.service.FileBasedDeployAndRetrieve;
@@ -44,6 +42,7 @@ public class WebController {
 	@Autowired
 	private GitAccountsService gitAccountsService;
 	
+	
 	@GetMapping("/check-existence")
 	public int checkExistence(@RequestParam(name="email") String email)
 	{
@@ -61,21 +60,13 @@ public class WebController {
 		return userService.validateUser(user, response);
 	}
 
-	@GetMapping("/add-user-id/{id}")
-	public String xyz(@RequestParam String id, HttpServletRequest request , HttpServletResponse response) {
+	@GetMapping("/add-cookie")
+	public String addCookie(@RequestParam String id, HttpServletRequest request , HttpServletResponse response) {
 		Cookie cookie = new Cookie("user_id", id);
 		response.addCookie(cookie);
-		Cookie cookies[] = request.getCookies();
-		for(Cookie c : cookies) {
-			if(c.getName().equals("user_id"))
-				return c.getValue();
-		}
-		
-		return "";
+		return  id;
 	}
 	
-	
-
 	@GetMapping("/new-org")
 	public String authorizeOrg(@RequestParam(required = false) String code, HttpServletRequest request) 
 	{
@@ -85,31 +76,8 @@ public class WebController {
 	@GetMapping("/list-orgs")
 	public ArrayList<Map<String, String>> getOrgList(HttpServletRequest request){
 		String user_id = SFservice.readCookie(request, "user_id");
-		ArrayList<SalesforceOrg> sfOrgs =  SFservice.getOrgList(user_id);
-		ArrayList<Map<String, String >> res = new ArrayList<Map<String,String>>();
-		
-		for(SalesforceOrg sfOrg : sfOrgs) {
-			Map<String, String > mp = new HashMap<String, String>();
-			mp.put("org_id", sfOrg.getId());
-			mp.put("org_label", sfOrg.getInstanceUrl().substring(8));
-			res.add(mp);
-		}
-		
-		return res;
+		return SFservice.getOrgList(user_id);
 	}
-
-	
-//	@GetMapping("/new-org")
-//	public ModelAndView authorized(@RequestParam String code) 
-//	{
-//		String organizationId = SFservice.authorizeOrg(code);
-//		
-//		ModelAndView mv = new ModelAndView();
-//		mv.addObject("orgId",organizationId );
-//		mv.setViewName("retrieve");
-//		return organizationId;
-//	
-//	}
 
 	@GetMapping("/oauth-git")
 	public ModelAndView oauthGit() {
@@ -132,6 +100,12 @@ public class WebController {
 	{	
 		String userId = SFservice.readCookie(request, "user_id");
 		return gitStoreService.listRepos(accountId, Integer.parseInt(userId));
+	}
+	
+	@GetMapping("list-git-accounts")
+	public ArrayList<GitAccounts> listGitAccounts(HttpServletRequest request){
+		String userId = SFservice.readCookie(request, "user_id");
+		return gitAccountsService.listGitAccounts(Integer.parseInt(userId));
 	}
 	
 //	@GetMapping("/list-mapped-repos/{org_id}")

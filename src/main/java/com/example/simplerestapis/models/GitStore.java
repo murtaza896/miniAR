@@ -1,57 +1,29 @@
 package com.example.simplerestapis.models;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
-import com.sun.istack.NotNull;
-
 public class GitStore {
 	
 	String repoId;
 	String repoUrl;
 	String repoName;
 	String username;
-	private User user;
-	private SalesforceOrg org;
-	
-	public GitStore(String repoId, String repoUrl, String repoName, String username, User user,
-			SalesforceOrg org) {
+	int userId;
+
+
+	public GitStore(String repoId, String repoUrl, String repoName, String username, int userId) {
 		super();
 		this.repoId = repoId;
 		this.repoUrl = repoUrl;
 		this.repoName = repoName;
 		this.username = username;
-		this.user = user;
-		this.org = org;
-	}
-	
-	public GitStore(String repoId, String repoUrl, String repoName, String username) {
-		super();
-		this.repoId = repoId;
-		this.repoUrl = repoUrl;
-		this.repoName = repoName;
-		this.username = username;
+		this.userId = userId;
 	}
 
-	public User getUser() {
-		return user;
+	public int getUserId() {
+		return userId;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-	public SalesforceOrg getOrg() {
-		return org;
-	}
-
-	public void setOrg(SalesforceOrg org) {
-		this.org = org;
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 
 	public String getRepoName() {

@@ -1,5 +1,6 @@
 package com.example.simplerestapis.service;
 
+import java.util.ArrayList;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -15,7 +16,6 @@ import org.springframework.web.client.RestTemplate;
 import com.example.simplerestapis.models.GitAccounts;
 import com.example.simplerestapis.models.User;
 import com.example.simplerestapis.repository.GitAccountsRepository;
-import com.sforce.soap.enterprise.sobject.GtwyProvPaymentMethodType;
 
 @Service
 public class GitAccountsService {
@@ -82,5 +82,9 @@ public class GitAccountsService {
 		GitAccounts gitAccount = new GitAccounts(accId, username, avatarUrl,accessToken, user);
 		gitAccountsRepository.save(gitAccount);
 		return accId;
+	}
+
+	public ArrayList<GitAccounts> listGitAccounts(int userId) {
+		return gitAccountsRepository.findByuser_id(userId);
 	}
 }
