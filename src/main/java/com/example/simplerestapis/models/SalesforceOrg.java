@@ -18,8 +18,8 @@ public class SalesforceOrg {
 	
 	@Id
 	@NotNull
-	@Column(name="org_id")
-	String organizationId;
+	@Column(name="id")
+	String id;
 	
 	@Column(name="access_token")
 	String accessToken;
@@ -47,7 +47,7 @@ public class SalesforceOrg {
 	public SalesforceOrg(String organizationId, String accessToken, String refreshToken, 
 			String identityUrl, String instanceUrl, String issuedAt, User user) {
 		super();
-		this.organizationId = organizationId;
+		this.id = organizationId;
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;
 		this.identityUrl = identityUrl;
@@ -58,7 +58,7 @@ public class SalesforceOrg {
 
 	public SalesforceOrg(String organizationId, String accessToken, String refreshToken, String identityUrl, String instanceUrl, String issuedAt) {
 		super();
-		this.organizationId = organizationId;
+		this.id = organizationId;
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;
 		this.identityUrl = identityUrl;
@@ -74,12 +74,14 @@ public class SalesforceOrg {
 		this.user = user;
 	}
 
-	public String getOrganizationId() {
-		return organizationId;
+	
+
+	public String getId() {
+		return id;
 	}
 
-	public void setOrganizationId(String organizationId) {
-		this.organizationId = organizationId;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getAccessToken() {

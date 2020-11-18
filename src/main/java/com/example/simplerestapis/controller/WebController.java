@@ -108,7 +108,7 @@ public class WebController {
 		
 		for(SalesforceOrg sfOrg : sfOrgs) {
 			Map<String, String > mp = new HashMap<String, String>();
-			mp.put("org_id", sfOrg.getOrganizationId());
+			mp.put("org_id", sfOrg.getId());
 			mp.put("org_label", sfOrg.getInstanceUrl().substring(8));
 			res.add(mp);
 		}
@@ -158,7 +158,7 @@ public class WebController {
 //	
 //	}
 
-	@PostMapping("/ouath-git")
+	@GetMapping("/oauth-git")
 	public ModelAndView oauthGit() {
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("oauthGit");
@@ -175,9 +175,10 @@ public class WebController {
 	
 	@CrossOrigin("https://localhost:4200")
 	@GetMapping("/list-repo/{accessToken}")
-	public ArrayList<GitStore> listRepos(@PathVariable String accessToken)
+	public ArrayList<GitStore> listRepos(@PathVariable String accessToken, HttpServletRequest request)
 	{	
-		return gitStoreService.listRepos(accessToken);
+		String userId = SFservice.readCookie(request, "user_id");
+		return gitStoreService.listRepos(accessToken, Integer.parseInt(userId));
 	}
 	
 	@GetMapping("/list-mapped-repos/{org_id}")

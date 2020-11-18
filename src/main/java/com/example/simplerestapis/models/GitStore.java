@@ -38,7 +38,7 @@ public class GitStore {
 	private SalesforceOrg org;
 	
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "accountId")
+	@JoinColumn(name = "account_id")
 	private GitAccounts account;
 	
 	public GitStore(String repoId, String repoUrl, String repoName, String username, User user,

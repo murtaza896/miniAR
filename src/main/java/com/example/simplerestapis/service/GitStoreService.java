@@ -18,13 +18,18 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import com.example.simplerestapis.models.GitStore;
+import com.example.simplerestapis.models.User;
 import com.example.simplerestapis.repository.GitStoreRepository;
+import com.example.simplerestapis.repository.UserRepository;
 
 @Service
 public class GitStoreService {
 	
 	@Autowired
 	private GitStoreRepository repository;
+	
+	@Autowired 
+	private UserService userService;
 	
 	@Autowired
 	private Environment env;
@@ -37,9 +42,8 @@ public class GitStoreService {
 		return repository.findById(repoId).orElse(null);
 	}
 
-	public ArrayList<GitStore> listRepos(String accessToken) {
+	public ArrayList<GitStore> listRepos(String accessToken, int user_id) {
 		RestTemplate restTemplate = new RestTemplate();
-		
 		String url2 = env.getProperty("app.git.getrepos.uri");
 		String url3 = env.getProperty("app.git.getuser.uri");
 		
@@ -57,11 +61,14 @@ public class GitStoreService {
 		JSONObject obj3 = new JSONObject(response3.getBody());
 		ArrayList<GitStore> res = new ArrayList<GitStore>();
 		
+		
+		User user = userService.getUserById(user_id);
 		for(int i = 0; i < obj2.length(); i++ )
 		{
 			JSONObject temp = obj2.getJSONObject(i);
 			System.out.println(temp.getInt("id"));
-			GitStore tempRepo = new GitStore(temp.getInt("id") + "", temp.getString("name"), temp.getString("html_url"), obj3.getString("login"));
+			GitStore tempRepo = new GitStore(temp.getInt("id") + "", temp.getString("name"), temp.getString("html_url"), obj3.getString("login"), user, null);
+			
 			res.add(tempRepo);
 		}
 		
@@ -69,7 +76,7 @@ public class GitStoreService {
 	}
 	
 	public ArrayList<Map<String,String>> listMappedRepos(String orgId){
-		ArrayList<GitStore> repoList= repository.findByaccount_id(10);
+		ArrayList<GitStore> repoList= repository.findByorg_id(orgId);
 		ArrayList<Map<String, String>> res = new ArrayList<Map<String,String>>();
 		for(GitStore repo : repoList) {
 			Map<String, String> mp = new HashMap<String, String>();

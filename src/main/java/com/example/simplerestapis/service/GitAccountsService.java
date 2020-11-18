@@ -71,6 +71,7 @@ public class GitAccountsService {
 		accId = obj3.getInt("id");
 		username = obj3.getString("login");
 		avatarUrl = obj3.getString("avatar_url");
+		System.out.println(obj3);
 		user = userService.getUserById(Integer.parseInt(userId));
 		
 		GitAccounts gitAccount = new GitAccounts(accId, username, avatarUrl,accessToken, user);

@@ -13,8 +13,8 @@ import javax.persistence.Table;
 public class GitAccounts {
 	
 	@Id
-	@Column(name = "accountId")
-	int accountId;
+	@Column(name = "id")
+	int id;
 	
 	@Column(name = "username")
 	String username;
@@ -30,12 +30,13 @@ public class GitAccounts {
 	private User user;
 
 
-	public int getAccountId() {
-		return accountId;
+
+	public int getId() {
+		return id;
 	}
 
-	public void setAccountId(int accountId) {
-		this.accountId = accountId;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getUsername() {
@@ -72,7 +73,7 @@ public class GitAccounts {
 
 	public GitAccounts(int account_id, String username, String avatar_url, String access_token, User user) {
 		super();
-		this.accountId = account_id;
+		this.id = account_id;
 		this.username = username;
 		this.avatar_url = avatar_url;
 		this.access_token = access_token;
