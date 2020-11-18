@@ -70,7 +70,7 @@ public class WebController {
 		return null;
 	}
 	
-	@GetMapping("/addToken")
+	@GetMapping("/addCookies")
 	public String xyz(HttpServletRequest request , HttpServletResponse response) {
 		Cookie cookie = new Cookie("user_id", "1");
 		response.addCookie(cookie);
