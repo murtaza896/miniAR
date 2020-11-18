@@ -7,6 +7,8 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -22,10 +24,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-import com.example.simplerestapis.models.GitRepo;
+import com.example.simplerestapis.models.GitStore;
+import com.example.simplerestapis.models.SalesforceOrg;
 import com.example.simplerestapis.models.User;
 import com.example.simplerestapis.models.userCredentials;
+import com.example.simplerestapis.repository.GitAccountsRepository;
 import com.example.simplerestapis.service.FileBasedDeployAndRetrieve;
+import com.example.simplerestapis.service.GitAccountsService;
 import com.example.simplerestapis.service.GitStoreService;
 import com.example.simplerestapis.service.SalesforceService;
 import com.example.simplerestapis.service.UserService;
@@ -45,13 +50,16 @@ public class WebController {
 	@Autowired
 	private FileBasedDeployAndRetrieve fbd;
 	
-		
+	@Autowired
+	private GitAccountsService gitAccountsService;
+	
 	@GetMapping("/")
 	public ModelAndView welcome() {
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("index");
 		return mv;
 	}
+	
 	
 	@PostMapping("/register")
 	public User register(@RequestBody User user) {
@@ -90,6 +98,22 @@ public class WebController {
 	public String authorizeOrg(@RequestParam(required = false) String code, HttpServletRequest request) 
 	{
 		return SFservice.authorizeOrg(code, request);
+	}
+	
+	@GetMapping("/list-orgs")
+	public ArrayList<Map<String, String>> getOrgList(HttpServletRequest request){
+		String user_id = SFservice.readCookie(request, "user_id");
+		ArrayList<SalesforceOrg> sfOrgs =  SFservice.getOrgList(user_id);
+		ArrayList<Map<String, String >> res = new ArrayList<Map<String,String>>();
+		
+		for(SalesforceOrg sfOrg : sfOrgs) {
+			Map<String, String > mp = new HashMap<String, String>();
+			mp.put("org_id", sfOrg.getOrganizationId());
+			mp.put("org_label", sfOrg.getInstanceUrl().substring(8));
+			res.add(mp);
+		}
+		
+		return res;
 	}
 
 //	@GetMapping("/showRepos")
@@ -134,16 +158,32 @@ public class WebController {
 //	
 //	}
 
-	
-	@GetMapping("/new-repo")
-	public String authorizeGitAcc(@RequestParam String code) {
-		return gitStoreService.authorizeGitAcc(code);
+	@PostMapping("/ouath-git")
+	public ModelAndView oauthGit() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("oauthGit");
+		return mv;
 	}
 	
+	
+	@GetMapping("/new-repo")
+	public int authorizeGitAcc(@RequestParam String code, HttpServletRequest request) {
+		String userId = SFservice.readCookie(request, "user_id");
+		return gitAccountsService.authorizeGitAcc(code, userId);
+	}
+	
+	
+	@CrossOrigin("https://localhost:4200")
 	@GetMapping("/list-repo/{accessToken}")
-	public ArrayList<GitRepo> listRepos(@PathVariable String accessToken)
+	public ArrayList<GitStore> listRepos(@PathVariable String accessToken)
 	{	
 		return gitStoreService.listRepos(accessToken);
+	}
+	
+	@GetMapping("/list-mapped-repos/{org_id}")
+	public ArrayList<Map<String, String>> listMappedRepos(@PathVariable String org_id)
+	{	
+		return gitStoreService.listMappedRepos(org_id);
 	}
 	
 	@GetMapping("/retrieve/{orgId}")

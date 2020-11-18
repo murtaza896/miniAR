@@ -1,5 +1,6 @@
 package com.example.simplerestapis.service;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import javax.servlet.http.Cookie;
@@ -122,14 +123,8 @@ public class SalesforceService {
 
 		
 		organizationId = obj2.getString("organization_id");
-		
 		String user_id = null;
-		Cookie cookies[] = rqst.getCookies();
-		for(Cookie c: cookies) {
-			if(c.getName().equals("user_id")) {
-				user_id = c.getValue();
-			}
-		}
+		user_id = this.readCookie(rqst, "user_id");
 		if(user_id.equals(null)) return null;
 		User user = service.getUserById(Integer.parseInt(user_id));
 		SalesforceOrg org = new SalesforceOrg(organizationId, accessToken, refreshToken, identityUrl, instanceUrl,
@@ -137,5 +132,20 @@ public class SalesforceService {
 		this.addOrg(org);
 		return organizationId;
 
+	}
+	
+	public String readCookie(HttpServletRequest request , String key) {
+		String value = null;
+		Cookie cookies[] = request.getCookies();
+		for(Cookie c: cookies) {
+			if(c.getName().equals(key)) {
+				value = c.getValue();
+			}
+		}
+		return value;
+	}
+	
+	public ArrayList<SalesforceOrg> getOrgList(String user_id) {
+		return repository.findByuser_id(Integer.parseInt(user_id));
 	}
 }

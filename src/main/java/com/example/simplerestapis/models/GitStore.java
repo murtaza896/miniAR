@@ -2,22 +2,23 @@ package com.example.simplerestapis.models;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.sun.istack.NotNull;
 
 @Entity
-@Table(name="gitrepos")
+@Table(name="git_store")
 public class GitStore {
 	
 	@Id
 	@NotNull
 	@Column(name="repo_id")
 	String repoId;
-	
-	@Column(name="access_token")
-	String accessToken;
+
 	
 	@Column(name="repo_url")
 	String repoUrl;
@@ -25,9 +26,56 @@ public class GitStore {
 	@Column(name="repo_name")
 	String repoName;
 
-	@Column 
+	@Column(name = "username")
 	String username;
 	
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	@JoinColumn(name = "user_id")
+	private User user;
+	
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	@JoinColumn(name = "org_id")
+	private SalesforceOrg org;
+	
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	@JoinColumn(name = "accountId")
+	private GitAccounts account;
+	
+	public GitStore(String repoId, String repoUrl, String repoName, String username, User user,
+			SalesforceOrg org) {
+		super();
+		this.repoId = repoId;
+		this.repoUrl = repoUrl;
+		this.repoName = repoName;
+		this.username = username;
+		this.user = user;
+		this.org = org;
+	}
+	
+	public GitStore(String repoId, String repoUrl, String repoName, String username) {
+		super();
+		this.repoId = repoId;
+		this.repoUrl = repoUrl;
+		this.repoName = repoName;
+		this.username = username;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public SalesforceOrg getOrg() {
+		return org;
+	}
+
+	public void setOrg(SalesforceOrg org) {
+		this.org = org;
+	}
+
 	public String getRepoName() {
 		return repoName;
 	}
@@ -52,13 +100,6 @@ public class GitStore {
 		this.repoId = repoId;
 	}
 
-	public String getAccessToken() {
-		return accessToken;
-	}
-
-	public void setAccessToken(String accessToken) {
-		this.accessToken = accessToken;
-	}
 
 	public String getRepoUrl() {
 		return repoUrl;
@@ -66,15 +107,6 @@ public class GitStore {
 
 	public void setRepoUrl(String repoUrl) {
 		this.repoUrl = repoUrl;
-	}
-
-	public GitStore(String repoId, String accessToken, String repoUrl, String username, String repoName) {
-		super();
-		this.repoId = repoId;
-		this.accessToken = accessToken;
-		this.repoUrl = repoUrl;
-		this.username = username;
-		this.repoName = repoName;
 	}
 	
 	

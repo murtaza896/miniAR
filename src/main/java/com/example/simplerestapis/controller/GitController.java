@@ -27,22 +27,18 @@ import com.example.simplerestapis.service.IGitService;
 @Controller
 public class GitController {
 
-	@Autowired
-	private IGitService gitService;
-
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
 	}
 
+	
 	@RequestMapping(value = "/list-commits", method = RequestMethod.GET)
 	public String showGits(ModelMap model) {
 		// model.put("todos", service.retrieveTodos(name));
 		return "list-commits";
 	}
-
-
 
 	@RequestMapping(value = "/add-commit", method = RequestMethod.GET)
 	public String showAddGitPage(ModelMap model) {
@@ -75,7 +71,7 @@ public class GitController {
 //		todoService.updateTodo(todo);
 //		return "redirect:/list-todos";
 //	}
-	
+
 	@RequestMapping(value = "/success", method = RequestMethod.GET)
 	public String showSuccessPage(ModelMap model) {
 		model.addAttribute("success", new Git());
@@ -87,17 +83,17 @@ public class GitController {
 
 		if (result.hasErrors()) {
 			return "commit";
-		}	
-		JGitDemoApplication jda = new JGitDemoApplication(git.getRepoURL(),git.getUsername(),git.getPassword(),git.getMessage());
-		File path = new File ("D:\\DemoPresentation\\Testing");
+		}
+		JGitDemoApplication jda = new JGitDemoApplication(git.getRepoURL(), git.getUsername(), git.getPassword(),
+				git.getMessage());
+		File path = new File("D:\\DemoPresentation\\Testing");
 		File source = new File("D:\\DemoPresentation\\sample");
 		jda.repoClone();
 		JGitDemoApplication.copyDirectory(source, path);
 		jda.makeAChange();
 		jda.gitCommit();
 		jda.gitPush();
-		
-		
+
 		return "redirect:/success";
 	}
 }

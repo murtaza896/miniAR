@@ -18,7 +18,7 @@ public class SalesforceOrg {
 	
 	@Id
 	@NotNull
-	@Column(name="organization_id")
+	@Column(name="org_id")
 	String organizationId;
 	
 	@Column(name="access_token")
@@ -36,7 +36,7 @@ public class SalesforceOrg {
 	@Column(name="issued_at")
 	String issuedAt;
 	
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "user_id")
 	private User user;
 
