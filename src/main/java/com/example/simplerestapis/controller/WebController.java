@@ -1,11 +1,19 @@
 package com.example.simplerestapis.controller;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +29,7 @@ import com.example.simplerestapis.models.userCredentials;
 import com.example.simplerestapis.service.FileBasedDeployAndRetrieve;
 import com.example.simplerestapis.service.GitAccountsService;
 import com.example.simplerestapis.service.GitStoreService;
+import com.example.simplerestapis.service.JGitService2;
 import com.example.simplerestapis.service.SalesforceService;
 import com.example.simplerestapis.service.UserService;
 
@@ -42,6 +51,11 @@ public class WebController {
 	@Autowired
 	private GitAccountsService gitAccountsService;
 	
+	@Autowired
+	private JGitService2 jgitService2;
+	
+	@Autowired
+	private Environment env;
 	
 	@GetMapping("/check-existence")
 	public int checkExistence(@RequestParam(name="email") String email)
@@ -138,6 +152,42 @@ public class WebController {
 		return mv;
 	}
 	
+	@PostMapping(path = "/git-commit", headers = "Accept=application/json")
+	public Boolean gitClone(@RequestBody Map<String, String> data)
+	{
+		String repoUrl = data.get("repo_url");
+		String accId = data.get("acc_id");
+		String message = data.get("commit_msg");
+		
+		String path = env.getProperty("app.git.clone.dirpath");
+		
+		GitAccounts gitAccount = gitAccountsService.getUserById(Integer.parseInt(accId));
+		
+		String accessToken = gitAccount.getAccess_token();
+		String username = gitAccount.getUsername();
+		
+		if(jgitService2.gitClone(accessToken, repoUrl, path))
+		{
+			File sourceDir = new File(env.getProperty("app.sf.metadata.dirpath"));
+			File targetDir = new File(env.getProperty("app.git.clone.dirpath"));
+			
+			try 
+			{
+				jgitService2.copyDirectory(sourceDir, targetDir);
+			}
+			catch(Exception e)
+			{
+				System.out.println(e.getMessage());
+			}
+			
+			if(jgitService2.gitCommit(path, message, username))
+			{
+				return jgitService2.gitPush(accessToken, path);
+			}
+		}
+		
+		return false;
+	}
 }
 
 
