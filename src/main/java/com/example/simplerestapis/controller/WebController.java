@@ -1,7 +1,7 @@
 package com.example.simplerestapis.controller;
 
 import java.io.File;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Map;
 import javax.servlet.http.Cookie;
@@ -88,7 +88,7 @@ public class WebController {
 		redirectView.setUrl(env.getProperty("app.angular.pages.settings"));
 	    return redirectView;
 	}
-	
+	@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 	@GetMapping("/list-orgs")
 	public ArrayList<Map<String, String>> getOrgList(HttpServletRequest request){
 		String user_id = SFservice.readCookie(request, "user_id");
@@ -112,14 +112,17 @@ public class WebController {
 	    return redirectView;
 	}
 	
-	@CrossOrigin("https://localhost:4200")
+
+	
+	@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+
 	@GetMapping("/list-repos/{accountId}")
 	public ArrayList<GitStore> listRepos(@PathVariable int accountId, HttpServletRequest request)
 	{	
 		String userId = SFservice.readCookie(request, "user_id");
 		return gitStoreService.listRepos(accountId, Integer.parseInt(userId));
 	}
-	
+	@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 	@GetMapping("list-git-accounts")
 	public ArrayList<GitAccounts> listGitAccounts(HttpServletRequest request){
 		String userId = SFservice.readCookie(request, "user_id");
