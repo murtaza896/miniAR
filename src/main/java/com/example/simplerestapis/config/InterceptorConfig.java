@@ -13,6 +13,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(logInterceptor).excludePathPatterns("/login" , "/sign-up" , "/add-cookie");
+		registry.addInterceptor(logInterceptor).excludePathPatterns("/login" , "/sign-up" , "/add-cookie", "/check-existence");
 	}
 }

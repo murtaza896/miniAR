@@ -54,6 +54,7 @@ public class WebController {
 	@Autowired
 	private Environment env;
 	
+	@CrossOrigin("http://localhost:4200")
 	@GetMapping("/check-existence")
 	public int checkExistence(@RequestParam(name="email") String email)
 	{
@@ -66,6 +67,7 @@ public class WebController {
 		return userService.addUser(user);
 	}
 	
+	@CrossOrigin("http://localhost:4200")
 	@PostMapping("/login")
 	public int login(@RequestBody userCredentials user, HttpServletResponse response) {
 		return userService.validateUser(user, response);
