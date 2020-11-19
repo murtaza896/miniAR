@@ -1,19 +1,14 @@
 package com.example.simplerestapis.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,7 +43,7 @@ public class WebController {
 	private GitStoreService gitStoreService;
 	
 	@Autowired
-	private FileBasedDeployAndRetrieve fbd;
+	private FileBasedDeployAndRetrieve fileBasedDeployAndRetrieve;
 	
 	@Autowired
 	private GitAccountsService gitAccountsService;
@@ -115,7 +110,6 @@ public class WebController {
 	    return redirectView;
 	}
 	
-	
 	@CrossOrigin("https://localhost:4200")
 	@GetMapping("/list-repos/{accountId}")
 	public ArrayList<GitStore> listRepos(@PathVariable int accountId, HttpServletRequest request)
@@ -130,64 +124,75 @@ public class WebController {
 		return gitAccountsService.listGitAccounts(Integer.parseInt(userId));
 	}
 	
-//	@GetMapping("/list-mapped-repos/{org_id}")
-//	public ArrayList<Map<String, String>> listMappedRepos(@PathVariable String org_id)
-//	{	
-//		return gitStoreService.listMappedRepos(org_id);
+//	@GetMapping("/retrieve/{orgId}")
+//	public ModelAndView retrieveData(@PathVariable String orgId) {
+//		ModelAndView mv = new ModelAndView();
+//		mv.setViewName("retrieve");
+//		try {
+//			fbd.createMetadataConnection("retrieve",orgId);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return mv;
 //	}
 	
-	@GetMapping("/retrieve/{orgId}")
-	public ModelAndView retrieveData(@PathVariable String orgId) {
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("retrieve");
-		try {
-			fbd.createMetadataConnection("retrieve",orgId);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return mv;
-	}
-	
-	@GetMapping("/deploy/{orgId}")
-	public ModelAndView deployData(@PathVariable String orgId) {
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("retrieve");
-		try {
-			fbd.createMetadataConnection("deploy",orgId);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return mv;
-	}
+//	@GetMapping("/deploy/{orgId}")
+//	public ModelAndView deployData(@PathVariable String orgId) {
+//		ModelAndView mv = new ModelAndView();
+//		mv.setViewName("retrieve");
+//		try {
+//			fileBasedDeployAndRetrieve.createMetadataConnection("deploy",orgId);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return mv;
+//	}
 	
 	@PostMapping(path = "/git-commit", headers = "Accept=application/json")
 	public Boolean gitClone(@RequestBody Map<String, String> data)
 	{
+		String org_id = data.get("org_id");
 		String repoUrl = data.get("repo_url");
 		String accId = data.get("acc_id");
 		String message = data.get("commit_msg");
-		
 		String path = env.getProperty("app.git.clone.dirpath");
-		
+		System.out.println(data);
 		GitAccounts gitAccount = gitAccountsService.getUserById(Integer.parseInt(accId));
 		
 		String accessToken = gitAccount.getAccess_token();
 		String username = gitAccount.getUsername();
 		
+		
+		//Cloning the git repo
 		if(jgitService2.gitClone(accessToken, repoUrl, path))
 		{
-			File sourceDir = new File(env.getProperty("app.sf.metadata.dirpath"));
-			File targetDir = new File(env.getProperty("app.git.clone.dirpath"));
 			
+			//Retrieving  the Salesforce metadata
+			try {
+				fileBasedDeployAndRetrieve.createMetadataConnection("retrieve",org_id);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			try {
+				fileBasedDeployAndRetrieve.unzip(env.getProperty("app.sf.metadata.dirpathZip"), env.getProperty("app.sf.metadata.dirpathUnZip"));
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			File targetDir = new File(env.getProperty("app.git.clone.dirpath"));
+			File sourceDirUnZip = new File(env.getProperty("app.sf.metadata.dirpathUnZip"));
 			try 
 			{
-				jgitService2.copyDirectory(sourceDir, targetDir);
+				jgitService2.copyDirectory(sourceDirUnZip, targetDir);
 			}
 			catch(Exception e)
 			{
 				System.out.println(e.getMessage());
 			}
 			
+			
+			//Commiting and pushing to Git
 			if(jgitService2.gitCommit(path, message, username))
 			{
 				return jgitService2.gitPush(accessToken, path);
