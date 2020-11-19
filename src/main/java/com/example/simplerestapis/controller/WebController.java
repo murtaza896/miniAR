@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
+
 import com.example.simplerestapis.models.GitAccounts;
 import com.example.simplerestapis.models.GitStore;
 import com.example.simplerestapis.models.User;
@@ -82,9 +84,12 @@ public class WebController {
 	}
 	
 	@GetMapping("/new-org")
-	public String authorizeOrg(@RequestParam(required = false) String code, HttpServletRequest request) 
+	public RedirectView authorizeOrg(@RequestParam(required = false) String code, HttpServletRequest request) 
 	{
-		return SFservice.authorizeOrg(code, request);
+		SFservice.authorizeOrg(code, request);
+		RedirectView redirectView = new RedirectView();
+		redirectView.setUrl(env.getProperty("app.angular.pages.settings"));
+	    return redirectView;
 	}
 	
 	@GetMapping("/list-orgs")
@@ -102,9 +107,12 @@ public class WebController {
 	
 	
 	@GetMapping("/new-repo")
-	public int authorizeGitAcc(@RequestParam String code, HttpServletRequest request) {
+	public RedirectView authorizeGitAcc(@RequestParam String code, HttpServletRequest request) {
 		String userId = SFservice.readCookie(request, "user_id");
-		return gitAccountsService.authorizeGitAcc(code, userId);
+		gitAccountsService.authorizeGitAcc(code, userId);
+		RedirectView redirectView = new RedirectView();
+	    redirectView.setUrl(env.getProperty("app.angular.pages.settings"));
+	    return redirectView;
 	}
 	
 	
