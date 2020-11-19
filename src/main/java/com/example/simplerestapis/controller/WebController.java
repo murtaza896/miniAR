@@ -122,6 +122,7 @@ public class WebController {
 		String userId = SFservice.readCookie(request, "user_id");
 		return gitStoreService.listRepos(accountId, Integer.parseInt(userId));
 	}
+	@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 	@GetMapping("list-git-accounts")
 	public ArrayList<GitAccounts> listGitAccounts(HttpServletRequest request){
 		String userId = SFservice.readCookie(request, "user_id");
