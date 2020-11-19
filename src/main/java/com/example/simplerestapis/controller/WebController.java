@@ -1,7 +1,7 @@
 package com.example.simplerestapis.controller;
 
 import java.io.File;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Map;
 import javax.servlet.http.Cookie;
@@ -110,12 +110,10 @@ public class WebController {
 	    return redirectView;
 	}
 	
-<<<<<<< Updated upstream
-	@CrossOrigin("https://localhost:4200")
-=======
+
 	
 	@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
->>>>>>> Stashed changes
+
 	@GetMapping("/list-repos/{accountId}")
 	public ArrayList<GitStore> listRepos(@PathVariable int accountId, HttpServletRequest request)
 	{	
