@@ -86,7 +86,7 @@ public class WebController {
 		redirectView.setUrl(env.getProperty("app.angular.pages.settings"));
 	    return redirectView;
 	}
-	
+	@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 	@GetMapping("/list-orgs")
 	public ArrayList<Map<String, String>> getOrgList(HttpServletRequest request){
 		String user_id = SFservice.readCookie(request, "user_id");
@@ -110,14 +110,18 @@ public class WebController {
 	    return redirectView;
 	}
 	
+<<<<<<< Updated upstream
 	@CrossOrigin("https://localhost:4200")
+=======
+	
+	@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+>>>>>>> Stashed changes
 	@GetMapping("/list-repos/{accountId}")
 	public ArrayList<GitStore> listRepos(@PathVariable int accountId, HttpServletRequest request)
 	{	
 		String userId = SFservice.readCookie(request, "user_id");
 		return gitStoreService.listRepos(accountId, Integer.parseInt(userId));
 	}
-	
 	@GetMapping("list-git-accounts")
 	public ArrayList<GitAccounts> listGitAccounts(HttpServletRequest request){
 		String userId = SFservice.readCookie(request, "user_id");
