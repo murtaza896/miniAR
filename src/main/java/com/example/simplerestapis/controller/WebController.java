@@ -153,6 +153,7 @@ public class WebController {
 //		return mv;
 //	}
 	
+	@CrossOrigin(origins = "http://localhost:4200" , allowCredentials = "true")
 	@PostMapping(path = "/git-commit", headers = "Accept=application/json")
 	public Boolean gitClone(@RequestBody Map<String, String> data)
 	{

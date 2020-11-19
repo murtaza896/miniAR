@@ -39,7 +39,7 @@ public class UserService {
 			return -1;
 		}
 		
-		return 1;
+		return userRecord.getId();
 	}
 	
  	public int validateUser(userCredentials user, HttpServletResponse response) {
