@@ -61,7 +61,6 @@ public class WebController {
 		return userService.checkExistence(email);
 		// -1: not exists, 1: exists
 	}
-	
 	@PostMapping("/sign-up")
 	public User signUp(@RequestBody User user) {
 		return userService.addUser(user);
