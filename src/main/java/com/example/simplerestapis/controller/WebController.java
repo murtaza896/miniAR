@@ -140,17 +140,18 @@ public class WebController {
 //		return mv;
 //	}
 	
-//	@GetMapping("/deploy/{orgId}")
-//	public ModelAndView deployData(@PathVariable String orgId) {
-//		ModelAndView mv = new ModelAndView();
-//		mv.setViewName("retrieve");
-//		try {
-//			fileBasedDeployAndRetrieve.createMetadataConnection("deploy",orgId);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return mv;
-//	}
+	@CrossOrigin(origins = "http://localhost:4200" , allowCredentials = "true")
+	@GetMapping("/deploy/{orgId}")
+	public ModelAndView deployData(@PathVariable String orgId) {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("retrieve");
+		try {
+			fileBasedDeployAndRetrieve.createMetadataConnection("deploy",orgId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return mv;
+	}
 	
 	@CrossOrigin(origins = "http://localhost:4200" , allowCredentials = "true")
 	@PostMapping(path = "/git-commit", headers = "Accept=application/json")
@@ -168,11 +169,9 @@ public class WebController {
 		String username = gitAccount.getUsername();
 		
 		
-		//Cloning the git repo
 		if(jgitService2.gitClone(accessToken, repoUrl, path))
 		{
 			
-			//Retrieving  the Salesforce metadata
 			try {
 				fileBasedDeployAndRetrieve.createMetadataConnection("retrieve",org_id);
 			} catch (Exception e) {
@@ -182,7 +181,6 @@ public class WebController {
 			try {
 				fileBasedDeployAndRetrieve.unzip(env.getProperty("app.sf.metadata.dirpathZip"), env.getProperty("app.sf.metadata.dirpathUnZip"));
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			File targetDir = new File(env.getProperty("app.git.clone.dirpath"));
@@ -196,8 +194,6 @@ public class WebController {
 				System.out.println(e.getMessage());
 			}
 			
-			
-			//Commiting and pushing to Git
 			if(jgitService2.gitCommit(path, message, username))
 			{
 				return jgitService2.gitPush(accessToken, path);

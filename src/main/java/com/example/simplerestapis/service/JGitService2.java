@@ -30,10 +30,10 @@ public class JGitService2 {
 					.setCredentialsProvider(new UsernamePasswordCredentialsProvider(accessToken, ""))
 					.setDirectory(new File(path))
 					.call();
-			System.out.println(git);
+			System.out.println("Cloning....");
+			System.out.println("Colne successful :: " + path);
 			git.close();
 			
-			System.out.println("Checkout Successful");
 //			return "checkout successful";
 			return true;
 		} catch (GitAPIException e) {
@@ -66,6 +66,7 @@ public class JGitService2 {
 			Git git = Git.open(new File(path));
 			git.add().addFilepattern(".").call();
 			git.commit().setAuthor("Rohit", username).setMessage(message).call();
+			System.out.println("Commit Successful");
 			git.close();
 			return true;
 		} catch (IOException | GitAPIException e) {
