@@ -5,6 +5,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.simplerestapis.models.User;
+import com.example.simplerestapis.models.UserResponse;
 import com.example.simplerestapis.models.userCredentials;
 import com.example.simplerestapis.service.UserService;
 
@@ -32,8 +35,20 @@ public class UserController {
 	}
 	
 	@PostMapping("/sign-up")
-	public User signUp(@RequestBody User user) {
-		return userService.addUser(user);
+	public ResponseEntity<UserResponse> signUp(@RequestBody User user) {
+		
+		int id = userService.addUser(user);
+		UserResponse userResponse = new UserResponse();
+		userResponse.setuser_id(id);
+		
+		if (id != -1)
+		{	
+			userResponse.setMessage("User added Successfully");
+			return new ResponseEntity<UserResponse>(userResponse, HttpStatus.OK);
+		}
+		
+		userResponse.setMessage("Couldn't add user");
+		return new ResponseEntity<UserResponse>(userResponse, HttpStatus.EXPECTATION_FAILED);
 	}
 	
 

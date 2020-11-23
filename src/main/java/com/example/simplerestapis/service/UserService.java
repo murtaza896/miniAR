@@ -18,12 +18,24 @@ public class UserService {
 	@Autowired
 	private UserRepository repository;
 	
+	@Autowired
+	private UtilService utilService;
+	
 	public List<User> getAllUsers() {
 		return repository.findAll();
 	}
 	
-	public User addUser(User obj) {
-		return repository.save(obj);
+	public int addUser(User obj) {
+//		obj.setPassword(utilService.hashPass(obj.getPassword()));
+		if(this.checkExistence(obj.getEmail()) == -1)
+		{
+			User res = repository.save(obj);	
+			return res.getId();
+		}
+		else
+		{
+			return -1;
+		}
 	}
 	
 	public User getUserById(int id) {
