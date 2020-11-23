@@ -1,5 +1,7 @@
 package com.example.simplerestapis.service;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import javax.servlet.http.Cookie;
@@ -42,7 +44,7 @@ public class UserService {
 		return userRecord.getId();
 	}
 	
- 	public int validateUser(userCredentials user, HttpServletResponse response) {
+ 	public int validateUser(userCredentials user, HttpServletResponse response) throws NoSuchAlgorithmException {
 		
  		User userRecord = repository.findByEmail(user.email);
 		
@@ -51,13 +53,15 @@ public class UserService {
 			return -1;
 		}
 		
-		else if(userRecord.getPassword().equals(user.password)) 
+		else if(this.hashing(user.password).equals(userRecord.getPassword())) 
 		{
 			Cookie cookie = new Cookie("user_id", String.valueOf(userRecord.getId()));
 			response.addCookie(cookie);
 			return userRecord.getId();
 		}
 		
+		System.out.println(this.hashing(userRecord.getPassword()));
+		System.out.println(user.password);
 		return 0;
 	}
 	
@@ -78,5 +82,18 @@ public class UserService {
 		existing_user.setPassword(new_user.getPassword());
 		
 		return repository.save(existing_user);
+	}
+
+	public String hashing(String password) throws NoSuchAlgorithmException {
+		MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+		messageDigest.update(password.getBytes());
+		byte[] resultByteArray = messageDigest.digest();
+		StringBuilder sb = new StringBuilder();
+		
+		for(byte b : resultByteArray) {
+			sb.append(String.format("%02x", b));
+		}
+		
+		return sb.toString();
 	}
 }

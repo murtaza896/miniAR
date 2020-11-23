@@ -57,16 +57,16 @@ public class FileBasedDeployAndRetrieve {
 	private SalesforceService sfService;
 	
 	@Autowired 
-	private Environment env;
+	private static Environment env;
 
 	private MetadataConnection metadataConnection;
 
 	static BufferedReader rdr = new BufferedReader(new InputStreamReader(System.in));
 	private static final long ONE_SECOND = 1000;
 	private static final int MAX_NUM_POLL_REQUESTS = 50;
-	private static final String MANIFEST_FILE = "package.xml";
-	private static final String SOURCE_FILE = "C:\\Users\\AutoRABIT\\Desktop\\SFtest.zip";
-	private static final double API_VERSION = 29.0;
+	private static final String MANIFEST_FILE = "files\\1\\package.xml";
+	private static final String FOLDER = "files";
+	private static final double API_VERSION = 29.0; 
 	private static final int BUFFER_SIZE = 4096;
 
 	public void createMetadataConnection(String type, String orgId)
@@ -141,7 +141,7 @@ public class FileBasedDeployAndRetrieve {
 			// Write the zip to the file system
 			System.out.println("Writing results to zip file");
 			ByteArrayInputStream bais = new ByteArrayInputStream(result.getZipFile());
-			File resultsFile = new File(this.SOURCE_FILE);
+			File resultsFile = new File(this.FOLDER + "\\1" + "\\SF.zip");
 			FileOutputStream os = new FileOutputStream(resultsFile);
 			try {
 				ReadableByteChannel src = Channels.newChannel(bais);
@@ -265,13 +265,13 @@ public class FileBasedDeployAndRetrieve {
 			throw new Exception("The files were not successfully deployed");
 		}
 
-		System.out.println("The file " + this.SOURCE_FILE + " was successfully deployed");
+		System.out.println("The file " + this.FOLDER + " was successfully deployed");
 	}
 
 	private byte[] readZipFile() throws Exception {
 		// We assume here that you have a deploy.zip file.
 		// See the retrieve sample for how to retrieve a zip file.
-		File deployZip = new File(this.SOURCE_FILE);
+		File deployZip = new File(this.FOLDER);
 		if (!deployZip.exists() || !deployZip.isFile())
 			throw new Exception("Cannot find the zip file to deploy. Looking for " + deployZip.getAbsolutePath());
 

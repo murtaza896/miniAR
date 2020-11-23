@@ -1,14 +1,21 @@
 package com.example.simplerestapis.controller;
 
 import java.io.File;
-
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Map;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -61,14 +69,17 @@ public class WebController {
 		return userService.checkExistence(email);
 		// -1: not exists, 1: exists
 	}
+	@CrossOrigin("http://localhost:4200")
 	@PostMapping("/sign-up")
-	public User signUp(@RequestBody User user) {
+	public User signUp(@RequestBody User user) throws NoSuchAlgorithmException {
+		String password = user.getPassword();
+		user.setPassword(userService.hashing(password));
 		return userService.addUser(user);
 	}
 	
 	@CrossOrigin("http://localhost:4200")
 	@PostMapping("/login")
-	public int login(@RequestBody userCredentials user, HttpServletResponse response) {
+	public int login(@RequestBody userCredentials user, HttpServletResponse response) throws NoSuchAlgorithmException {
 		return userService.validateUser(user, response);
 	}
 
@@ -151,6 +162,29 @@ public class WebController {
 			e.printStackTrace();
 		}
 		return mv;
+	
+		
+	}
+	
+	@CrossOrigin(origins = "http://localhost:4200" , allowCredentials = "true")
+	@PostMapping(value = "/addFile")
+	public ResponseEntity<?> addFile(@RequestParam("file") MultipartFile file) {
+		String path = "F:\\Java\\miniAR\\files\\1\\" + file.getOriginalFilename() ;
+		File directory = new File(path);
+		if (!directory.exists()) {
+			directory.mkdirs();
+			System.out.println("directory not exists");
+		}
+		System.out.println("path:" +  path);
+		try {
+			file.transferTo(directory);
+		} catch (IllegalStateException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error");
+		}
+		
+		return ResponseEntity.ok("File added");
 	}
 	
 	@CrossOrigin(origins = "http://localhost:4200" , allowCredentials = "true")
@@ -161,7 +195,7 @@ public class WebController {
 		String repoUrl = data.get("repo_url");
 		String accId = data.get("acc_id");
 		String message = data.get("commit_msg");
-		String path = env.getProperty("app.git.clone.dirpath");
+		String path = env.getProperty("app.sf.files.uri");
 		System.out.println(data);
 		GitAccounts gitAccount = gitAccountsService.getUserById(Integer.parseInt(accId));
 		
@@ -169,35 +203,37 @@ public class WebController {
 		String username = gitAccount.getUsername();
 		
 		
-		if(jgitService2.gitClone(accessToken, repoUrl, path))
+		if(jgitService2.gitClone(accessToken, repoUrl, path + "\\1\\gitData"))
 		{
-			
 			try {
 				fileBasedDeployAndRetrieve.createMetadataConnection("retrieve",org_id);
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
-			
+			}			
 			try {
-				fileBasedDeployAndRetrieve.unzip(env.getProperty("app.sf.metadata.dirpathZip"), env.getProperty("app.sf.metadata.dirpathUnZip"));
+				fileBasedDeployAndRetrieve.unzip("files\\1\\SF.zip", "files\\1\\SF");
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
-			File targetDir = new File(env.getProperty("app.git.clone.dirpath"));
-			File sourceDirUnZip = new File(env.getProperty("app.sf.metadata.dirpathUnZip"));
+			File targetDir = new File("files\\1\\gitData");
+			
+			File sourceDirUnZip = new File("files\\1\\SF");
+			
 			try 
 			{
 				jgitService2.copyDirectory(sourceDirUnZip, targetDir);
+				
 			}
 			catch(Exception e)
 			{
 				System.out.println(e.getMessage());
 			}
 			
-			if(jgitService2.gitCommit(path, message, username))
+			if(jgitService2.gitCommit(path + "\\1\\gitData", message, username))
 			{
-				return jgitService2.gitPush(accessToken, path);
+				return jgitService2.gitPush(accessToken, path + "\\1\\gitData");
 			}
+			return true;
 		}
 		
 		return false;
