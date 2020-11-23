@@ -1,0 +1,21 @@
+<script src="webjars/jquery/1.9.1/jquery.min.js"></script>
+<script src="webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<style>
+.footer {
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	background-color: #ececec;
+	padding-top:10px;
+	color: grey;
+	height: 40px;
+	text-align: center;
+}
+</style>
+<div class="footer">
+	 &#169 Autobuds 3
+</div>
+
+</body>
+</html>

@@ -26,13 +26,15 @@ public class SalesforceService {
 
 	@Autowired
 	private SalesforceOrgRepository repository;
-	
+
 	@Autowired
 	private UserService service;
 
 	@Autowired
 	private Environment env;
 
+	@Autowired
+	private UtilService utilService;
 //	String authToken;
 
 	public SalesforceOrg addOrg(SalesforceOrg obj) {
@@ -70,7 +72,7 @@ public class SalesforceService {
 	}
 
 	public String authorizeOrg(String code, HttpServletRequest rqst) {
-		
+
 		String accessToken = "";
 		String refreshToken = "";
 		String clientId = env.getProperty("app.sf.client_id");
@@ -100,21 +102,19 @@ public class SalesforceService {
 
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 
-		try 
-		{
+		try {
 			ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
 			JSONObject obj = new JSONObject(response.getBody());
-			
+
 			accessToken = obj.getString("access_token");
 			refreshToken = obj.getString("refresh_token");
 			instanceUrl = obj.getString("instance_url");
 			identityUrl = obj.getString("id");
 			issuedAt = obj.getString("issued_at");
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			System.out.println("Failed to get Access Token: \n" + e);
 		}
-		
+
 		String url2 = identityUrl;
 		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url2);
 
@@ -123,52 +123,39 @@ public class SalesforceService {
 		vars.add("format", "json");
 		builder.queryParams(vars);
 
-		try 
-		{
+		try {
 			String response2 = restTemplate.getForObject(builder.build().encode().toUriString(), String.class, vars);
 			JSONObject obj2 = new JSONObject(response2);
 			organizationId = obj2.getString("organization_id");
 			username = obj2.getString("username");
 			nickName = obj2.getString("nick_name");
-		}
-		catch(Exception e) 
-		{
+		} catch (Exception e) {
 			System.out.println("Failed to fetch org details: \n" + e);
 		}
-		
+
 		String user_id = null;
-		user_id = this.readCookie(rqst, "user_id");
-		if(user_id.equals(null)) return null;
-		
+		user_id = utilService.readCookie(rqst, "user_id");
+		if (user_id.equals(null))
+			return null;
+
 		User user = service.getUserById(Integer.parseInt(user_id));
 		SalesforceOrg org = new SalesforceOrg(organizationId, accessToken, refreshToken, identityUrl, instanceUrl,
-				issuedAt, username , nickName, user);
+				issuedAt, username, nickName, user);
 		this.addOrg(org);
-		
+
 		return organizationId;
 
 	}
-	
-	public String readCookie(HttpServletRequest request , String key) {
-		String value = null;
-		Cookie cookies[] = request.getCookies();
-		if(cookies == null ||  cookies.length == 0) return null;
-		for(Cookie c: cookies) {
-			if(c.getName().equals(key)) {
-				value = c.getValue();
-			}
-		}
-		return value;
-	}
-	
-	public ArrayList<Map<String, String >> getOrgList(String user_id) {
-		ArrayList<Map<String, String >> res = new ArrayList<Map<String,String>>();
+
+
+	public ArrayList<Map<String, String>> getOrgList(String user_id) {
+		ArrayList<Map<String, String>> res = new ArrayList<Map<String, String>>();
 		ArrayList<SalesforceOrg> sfOrgs = repository.findByuser_id(Integer.parseInt(user_id));
-		for(SalesforceOrg sfOrg : sfOrgs) {
-			Map<String, String > mp = new HashMap<String, String>();
+		for (SalesforceOrg sfOrg : sfOrgs) {
+			Map<String, String> mp = new HashMap<String, String>();
 			mp.put("org_id", sfOrg.getId());
 			mp.put("org_label", sfOrg.getInstanceUrl().substring(8));
-			mp.put("username" , sfOrg.getUsername());
+			mp.put("username", sfOrg.getUsername());
 			System.out.println(sfOrg.getUsername());
 			mp.put("nick_name", sfOrg.getNickName());
 			res.add(mp);
