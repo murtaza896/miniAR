@@ -130,11 +130,11 @@ public class UserController {
 		}
 	}
 
-	@GetMapping("/add-cookie")
-	public String addCookie(@RequestParam String id, HttpServletRequest request , HttpServletResponse response) {
-		Cookie cookie = new Cookie("user_id", id);
-		cookie.setPath("/");
-		response.addCookie(cookie);
-		return  id;
-	}
+//	@GetMapping("/add-cookie")
+//	public String addCookie(@RequestParam String id, HttpServletRequest request , HttpServletResponse response) {
+//		Cookie cookie = new Cookie("user_id", id);
+//		cookie.setPath("/");
+//		response.addCookie(cookie);
+//		return  id;
+//	}
 }

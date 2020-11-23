@@ -55,28 +55,28 @@ public class UserService implements UserDetailsService {
 		return userRecord.getId();
 	}
 
-	public int validateUser(userCredentials user, HttpServletResponse response) throws NoSuchAlgorithmException {
-
-		User userRecord = repository.findByEmail(user.email);
-
-		if (userRecord == null) {
-			return -1;
-		}
-
-		else if (this.hashing(user.password).equals(userRecord.getPassword())) {
-			Cookie cookie = new Cookie("user_id", String.valueOf(userRecord.getId()));
-			cookie.setPath("/");
-			System.out.println(userRecord);
-			System.out.println(cookie.getValue());
-
-			response.addCookie(cookie);
-			return userRecord.getId();
-		}
-
-		System.out.println(this.hashing(userRecord.getPassword()));
-		System.out.println(user.password);
-		return 0;
-	}
+//	public int validateUser(userCredentials user, HttpServletResponse response) throws NoSuchAlgorithmException {
+//
+//		User userRecord = repository.findByEmail(user.email);
+//
+//		if (userRecord == null) {
+//			return -1;
+//		}
+//
+//		else if (this.hashing(user.password).equals(userRecord.getPassword())) {
+//			Cookie cookie = new Cookie("user_id", String.valueOf(userRecord.getId()));
+//			cookie.setPath("/");
+//			System.out.println(userRecord);
+//			System.out.println(cookie.getValue());
+//
+//			response.addCookie(cookie);
+//			return userRecord.getId();
+//		}
+//
+//		System.out.println(this.hashing(userRecord.getPassword()));
+//		System.out.println(user.password);
+//		return 0;
+//	}
 
 	public String deleteUser(int id) {
 		if (getUserById(id) != null)
@@ -125,5 +125,11 @@ public class UserService implements UserDetailsService {
 
 	public User getByemail(String email) {
 		return repository.findByEmail(email);
+	}
+	
+	public int getIdByEmail(String email) {
+		System.out.println(email);
+		System.out.println(repository.findByEmail(email).getId());
+		return repository.findByEmail(email).getId();
 	}
 }

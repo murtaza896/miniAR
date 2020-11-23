@@ -28,13 +28,15 @@ public class SalesforceService {
 	private SalesforceOrgRepository repository;
 
 	@Autowired
-	private UserService service;
+	private UserService userService;
 
 	@Autowired
 	private Environment env;
 
 	@Autowired
 	private UtilService utilService;
+	
+	
 //	String authToken;
 
 	public SalesforceOrg addOrg(SalesforceOrg obj) {
@@ -133,12 +135,13 @@ public class SalesforceService {
 			System.out.println("Failed to fetch org details: \n" + e);
 		}
 
-		String user_id = null;
-		user_id = utilService.readCookie(rqst, "user_id");
-		if (user_id.equals(null))
-			return null;
+//		String user_id = null;
+//		user_id = utilService.readCookie(rqst, "user_id");
+		String user_id = userService.getIdByEmail(rqst.getAttribute("email").toString()) + "";
+//		if (user_id.equals(null))
+//			return null;
 
-		User user = service.getUserById(Integer.parseInt(user_id));
+		User user = userService.getUserById(Integer.parseInt(user_id));
 		SalesforceOrg org = new SalesforceOrg(organizationId, accessToken, refreshToken, identityUrl, instanceUrl,
 				issuedAt, username, nickName, user);
 		this.addOrg(org);

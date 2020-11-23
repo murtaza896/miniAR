@@ -28,6 +28,7 @@ import com.example.simplerestapis.service.FileBasedDeployAndRetrieve;
 import com.example.simplerestapis.service.GitAccountsService;
 import com.example.simplerestapis.service.GitStoreService;
 import com.example.simplerestapis.service.JGitService2;
+import com.example.simplerestapis.service.UserService;
 import com.example.simplerestapis.service.UtilService;
 
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
@@ -43,6 +44,9 @@ public class GitController {
 
 	@Autowired
 	private GitAccountsService gitAccountsService;
+	
+	@Autowired
+	private UserService userService;
 
 	@Autowired
 	private JGitService2 jgitService2;
@@ -62,7 +66,8 @@ public class GitController {
 
 	@GetMapping("/new-repo")
 	public RedirectView authorizeGitAcc(@RequestParam String code, HttpServletRequest request) {
-		String userId = utilService.readCookie(request, "user_id");
+//		String userId = utilService.readCookie(request, "user_id");
+		String userId = userService.getIdByEmail(request.getAttribute("email").toString()) + "";
 		gitAccountsService.authorizeGitAcc(code, userId);
 		RedirectView redirectView = new RedirectView();
 		redirectView.setUrl(env.getProperty("app.angular.pages.settings"));
@@ -71,13 +76,15 @@ public class GitController {
 
 	@GetMapping("/list-repos/{accountId}")
 	public ArrayList<GitStore> listRepos(@PathVariable int accountId, HttpServletRequest request) {
-		String userId = utilService.readCookie(request, "user_id");
+//		String userId = utilService.readCookie(request, "user_id");
+		String userId = userService.getIdByEmail(request.getAttribute("email").toString()) + "";
 		return gitStoreService.listRepos(accountId, Integer.parseInt(userId));
 	}
 
 	@GetMapping("list-accounts")
 	public ArrayList<GitAccounts> listGitAccounts(HttpServletRequest request) {
-		String userId = utilService.readCookie(request, "user_id");
+//		String userId = utilService.readCookie(request, "user_id");
+		String userId = userService.getIdByEmail(request.getAttribute("email").toString()) + "";
 		return gitAccountsService.listGitAccounts(Integer.parseInt(userId));
 	}
 
