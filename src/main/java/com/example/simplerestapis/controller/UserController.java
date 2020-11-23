@@ -1,5 +1,7 @@
 package com.example.simplerestapis.controller;
 
+import java.security.NoSuchAlgorithmException;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,9 +53,8 @@ public class UserController {
 		return new ResponseEntity<UserResponse>(userResponse, HttpStatus.EXPECTATION_FAILED);
 	}
 	
-
 	@PostMapping("/login")
-	public int login(@RequestBody userCredentials user, HttpServletResponse response) {
+	public int login(@RequestBody userCredentials user, HttpServletResponse response) throws NoSuchAlgorithmException {
 		return userService.validateUser(user, response);
 	}
 
