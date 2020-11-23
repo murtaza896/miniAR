@@ -68,6 +68,10 @@ public class UserService {
 		else if(this.hashing(user.password).equals(userRecord.getPassword())) 
 		{
 			Cookie cookie = new Cookie("user_id", String.valueOf(userRecord.getId()));
+			cookie.setPath("/");
+			System.out.println(userRecord);
+			System.out.println(cookie.getValue());
+			
 			response.addCookie(cookie);
 			return userRecord.getId();
 		}

@@ -39,6 +39,12 @@ public class UserController {
 	@PostMapping("/sign-up")
 	public ResponseEntity<UserResponse> signUp(@RequestBody User user) {
 		
+		try {
+			user.setPassword(userService.hashing(user.getPassword()));
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		int id = userService.addUser(user);
 		UserResponse userResponse = new UserResponse();
 		userResponse.setuser_id(id);
@@ -54,8 +60,29 @@ public class UserController {
 	}
 	
 	@PostMapping("/login")
-	public int login(@RequestBody userCredentials user, HttpServletResponse response) throws NoSuchAlgorithmException {
-		return userService.validateUser(user, response);
+	public ResponseEntity<UserResponse> login(@RequestBody userCredentials user, HttpServletResponse response) throws NoSuchAlgorithmException {
+		
+		int userId = userService.validateUser(user, response);
+		UserResponse userResponse = new UserResponse();
+		userResponse.setuser_id(userId);
+		
+		if(userId > 0)
+		{	
+			userResponse.setMessage("User Logged in succesfully");
+			
+			return new ResponseEntity<UserResponse>(userResponse, HttpStatus.OK);
+		}
+		else if(userId == 0)
+		{
+			userResponse.setMessage("Bad Credentials");
+			return new ResponseEntity<UserResponse>(userResponse, HttpStatus.BAD_REQUEST);
+		}
+		else
+		{
+			userResponse.setMessage("Couldn't find user");
+			return new ResponseEntity<UserResponse>(userResponse, HttpStatus.NOT_FOUND);
+		}
+			
 	}
 
 	@GetMapping("/add-cookie")
