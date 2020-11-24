@@ -75,7 +75,7 @@ public class GitController {
 //		String userId = utilService.readCookie(request, "user_id");
 		
 		final String requestTokenHeader = utilService.readCookie(request, "token");
-		 
+		System.out.println(requestTokenHeader);
 		String username = null;
 		String jwtToken = null;
 		// JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
@@ -93,7 +93,7 @@ public class GitController {
 		}
 		
 		String userId = userService.getIdByEmail(username) + "";
-		
+		System.out.println("userId: " + userId);
 		gitAccountsService.authorizeGitAcc(code, userId);
 		RedirectView redirectView = new RedirectView();
 		redirectView.setUrl(env.getProperty("app.angular.pages.settings"));
