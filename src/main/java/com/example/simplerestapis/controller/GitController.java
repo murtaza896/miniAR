@@ -7,8 +7,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -114,7 +116,7 @@ public class GitController {
 
 	@PostMapping(value = "/addFile")
 	public ResponseEntity<?> addFile(@RequestParam("file") MultipartFile file) {
-		String path = "F:\\Java\\miniAR\\files\\1\\" + file.getOriginalFilename();
+		String path = "D:\\Integration\\miniAR\\files\\1\\" + file.getOriginalFilename();
 		File directory = new File(path);
 		if (!directory.exists()) {
 			directory.mkdirs();
@@ -127,8 +129,8 @@ public class GitController {
 		} catch (IllegalStateException | IOException e) {
 			e.printStackTrace();
 		}
-
-		return ResponseEntity.ok("File added");
+		
+		return new ResponseEntity<>( HttpStatus.OK);
 	}
 
 	@PostMapping(path = "/commit", headers = "Accept=application/json")

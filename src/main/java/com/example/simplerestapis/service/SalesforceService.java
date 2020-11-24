@@ -3,8 +3,9 @@ package com.example.simplerestapis.service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.Cookie;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -17,6 +18,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import com.example.simplerestapis.config.JwtTokenUtil;
 import com.example.simplerestapis.models.SalesforceOrg;
 import com.example.simplerestapis.models.User;
 import com.example.simplerestapis.repository.SalesforceOrgRepository;
@@ -35,6 +38,9 @@ public class SalesforceService {
 
 	@Autowired
 	private UtilService utilService;
+	
+	@Autowired
+	private JwtTokenUtil jwtTokenUtil;
 	
 	
 //	String authToken;
@@ -137,11 +143,30 @@ public class SalesforceService {
 
 //		String user_id = null;
 //		user_id = utilService.readCookie(rqst, "user_id");
-		String user_id = userService.getIdByEmail(rqst.getAttribute("email").toString()) + "";
+//		String user_id = userService.getIdByEmail(rqst.getAttribute("email").toString()) + "";
+		final String requestTokenHeader = utilService.readCookie(rqst, "token");
+		 
+		String username2 = null;
+		String jwtToken = null;
+		// JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
+		if (requestTokenHeader != null) {
+			jwtToken = requestTokenHeader;
+			try {
+				username2 = jwtTokenUtil.getUsernameFromToken(jwtToken);
+			} catch (IllegalArgumentException e) {
+				System.out.println("Unable to get JWT Token");
+			} catch (Exception e) {
+				System.out.println("JWT Token has expired");
+			}
+		} else {
+			System.out.println("JWT Token does not begin with Bearer String");
+		}
+		
+		String userId = userService.getIdByEmail(username2) + "";
 //		if (user_id.equals(null))
 //			return null;
 
-		User user = userService.getUserById(Integer.parseInt(user_id));
+		User user = userService.getUserById(Integer.parseInt(userId));
 		System.out.println("User object: " + user);
 		SalesforceOrg org = new SalesforceOrg(organizationId, accessToken, refreshToken, identityUrl, instanceUrl,
 				issuedAt, username, nickName, user);
