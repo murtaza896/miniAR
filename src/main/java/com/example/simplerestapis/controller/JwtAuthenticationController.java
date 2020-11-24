@@ -23,7 +23,7 @@ import com.example.simplerestapis.service.UserService;
 
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins="http://localhost:4200", allowCredentials="true")
 public class JwtAuthenticationController {
 
 	@Autowired

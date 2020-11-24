@@ -142,6 +142,7 @@ public class SalesforceService {
 //			return null;
 
 		User user = userService.getUserById(Integer.parseInt(user_id));
+		System.out.println("User object: " + user);
 		SalesforceOrg org = new SalesforceOrg(organizationId, accessToken, refreshToken, identityUrl, instanceUrl,
 				issuedAt, username, nickName, user);
 		this.addOrg(org);

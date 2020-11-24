@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import com.example.simplerestapis.config.JwtTokenUtil;
 import com.example.simplerestapis.models.GitAccounts;
 import com.example.simplerestapis.models.GitStore;
 import com.example.simplerestapis.service.FileBasedDeployAndRetrieve;
@@ -54,6 +55,9 @@ public class GitController {
 	@Autowired
 	private FileBasedDeployAndRetrieve fileBasedDeployAndRetrieve;
 
+	@Autowired
+	private JwtTokenUtil jwtTokenUtil;
+	
 	@GetMapping("/oauth")
 	public ModelAndView oauthGit() {
 		ModelAndView mv = new ModelAndView();
@@ -67,7 +71,27 @@ public class GitController {
 	@GetMapping("/new-repo")
 	public RedirectView authorizeGitAcc(@RequestParam String code, HttpServletRequest request) {
 //		String userId = utilService.readCookie(request, "user_id");
-		String userId = userService.getIdByEmail(request.getAttribute("email").toString()) + "";
+		
+		final String requestTokenHeader = utilService.readCookie(request, "token");
+		 
+		String username = null;
+		String jwtToken = null;
+		// JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
+		if (requestTokenHeader != null) {
+			jwtToken = requestTokenHeader;
+			try {
+				username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+			} catch (IllegalArgumentException e) {
+				System.out.println("Unable to get JWT Token");
+			} catch (Exception e) {
+				System.out.println("JWT Token has expired");
+			}
+		} else {
+			System.out.println("JWT Token does not begin with Bearer String");
+		}
+		
+		String userId = userService.getIdByEmail(username) + "";
+		
 		gitAccountsService.authorizeGitAcc(code, userId);
 		RedirectView redirectView = new RedirectView();
 		redirectView.setUrl(env.getProperty("app.angular.pages.settings"));
