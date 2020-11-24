@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -25,8 +24,10 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.example.simplerestapis.config.JwtTokenUtil;
+import com.example.simplerestapis.models.CommitHistory;
 import com.example.simplerestapis.models.GitAccounts;
 import com.example.simplerestapis.models.GitStore;
+import com.example.simplerestapis.service.CommitHistoryService;
 import com.example.simplerestapis.service.FileBasedDeployAndRetrieve;
 import com.example.simplerestapis.service.GitAccountsService;
 import com.example.simplerestapis.service.GitStoreService;
@@ -59,6 +60,9 @@ public class GitController {
 
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
+	
+	@Autowired
+	private CommitHistoryService commitHistoryService;
 	
 	@GetMapping("/oauth")
 	public ModelAndView oauthGit() {
@@ -134,7 +138,7 @@ public class GitController {
 	}
 
 	@PostMapping(path = "/commit", headers = "Accept=application/json")
-	public Boolean gitCommit(@RequestBody Map<String, String> data) {
+	public Boolean gitCommit(@RequestBody Map<String, String> data, HttpServletRequest request) {
 		String org_id = data.get("org_id");
 		String repoUrl = data.get("repo_url");
 		String accId = data.get("acc_id");
@@ -167,8 +171,26 @@ public class GitController {
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
-
-			if (jgitService2.gitCommit(path + "\\1\\gitData", message, username)) {
+			final String requestTokenHeader = utilService.readCookie(request, "token");
+			 
+			String username2 = null;
+			String jwtToken = null;
+			// JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
+			if (requestTokenHeader != null) {
+				jwtToken = requestTokenHeader;
+				try {
+					username2 = jwtTokenUtil.getUsernameFromToken(jwtToken);
+				} catch (IllegalArgumentException e) {
+					System.out.println("Unable to get JWT Token");
+				} catch (Exception e) {
+					System.out.println("JWT Token has expired");
+				}
+			} else {
+				System.out.println("JWT Token does not begin with Bearer String");
+			}
+			
+			String userId = userService.getIdByEmail(username2) + "";
+			if (jgitService2.gitCommit(path + "\\1\\gitData", message, username, repoUrl, userId, org_id)) {
 				return jgitService2.gitPush(accessToken, path + "\\1\\gitData");
 			}
 			return true;
@@ -187,5 +209,11 @@ public class GitController {
 			e.printStackTrace();
 		}
 		return mv;
+	}
+	
+	@GetMapping("/commit-history")
+	public ArrayList<CommitHistory> listCommitHistory(HttpServletRequest request){
+		String userId = userService.getIdByEmail(request.getAttribute("email").toString())+"";
+		return commitHistoryService.listCommitHistory(Integer.parseInt(userId));
 	}
 }

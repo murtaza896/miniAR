@@ -4,19 +4,37 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+
+import com.example.simplerestapis.models.CommitHistory;
+import com.example.simplerestapis.repository.CommitHistoryRepository;
 
 @Service
 public class JGitService2 {
 	
 	@Autowired
 	GitAccountsService gitAccountsService;
+	
+	@Autowired
+	CommitHistoryRepository commitHistoryRepository;
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	SalesforceService salesforceService; 
+	
 	
 	public Boolean gitClone(String accessToken, String repoUrl, String path)
 	{
@@ -60,12 +78,20 @@ public class JGitService2 {
 		}
 	}
 	
-	public Boolean gitCommit(String path, String message, String username) {
+	public Boolean gitCommit(String path, String message, String username , String repoUrl, String userId, String orgId) {
 		
 		try {
 			Git git = Git.open(new File(path));
 			git.add().addFilepattern(".").call();
-			git.commit().setAuthor("Rohit", username).setMessage(message).call();
+			RevCommit rc = git.commit().setAuthor("Rohit", username).setMessage(message).call();
+			String committime = rc.getCommitTime() + "000";
+			long x = Long.parseLong(committime);
+			Timestamp timestamp =  new Timestamp(x);
+			System.out.println("TimeStamp:" + timestamp);
+			System.out.println(rc.getName());
+			CommitHistory commitHistory  = new CommitHistory(rc.getName(), repoUrl, timestamp , userService.getUserById(Integer.parseInt(userId)), salesforceService.getOrg(orgId) );
+			commitHistoryRepository.save(commitHistory);
+			System.out.println(git.toString());
 			System.out.println("Commit Successful");
 			git.close();
 			return true;
