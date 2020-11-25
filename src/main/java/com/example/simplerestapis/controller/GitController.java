@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,8 +120,17 @@ public class GitController {
 	}
 
 	@PostMapping(value = "/addFile")
-	public ResponseEntity<?> addFile(@RequestParam("file") MultipartFile file) {
-		String path = "D:\\Integration\\miniAR\\files\\1\\" + file.getOriginalFilename();
+	public ResponseEntity<?> addFile(@RequestParam("file") MultipartFile file, @RequestParam(name="org_id") String orgId, HttpServletRequest request) {
+		int userId = utilService.readIdFromToken(request);
+		 
+		
+		String path = env.getProperty("app.data.dirPath") + "\\" + userId + "\\" + orgId + "\\package.xml" ;
+//		path = context.getRealPath(path);
+		
+		
+		System.out.println("uploading package.xml to: " + path);
+//		String path = "D:\\Integration\\miniAR\\files\\1\\" + file.getOriginalFilename();
+		
 		File directory = new File(path);
 		if (!directory.exists()) {
 			directory.mkdirs();
@@ -143,27 +153,34 @@ public class GitController {
 		String repoUrl = data.get("repo_url");
 		String accId = data.get("acc_id");
 		String message = data.get("commit_msg");
-		String path = env.getProperty("app.sf.files.uri");
-		System.out.println(data);
+		String repoId = data.get("repo_id");
+		int userId = utilService.readIdFromToken(request);
+		
+//		String path = env.getProperty("app.sf.files.uri");
+		String path = env.getProperty("app.data.dirPath") + "\\" + userId  + "\\" + org_id;
+		
 		GitAccounts gitAccount = gitAccountsService.getUserById(Integer.parseInt(accId));
 
 		String accessToken = gitAccount.getAccess_token();
 		String username = gitAccount.getUsername();
 
-		if (jgitService2.gitClone(accessToken, repoUrl, path + "\\1\\gitData")) {
+		if (jgitService2.gitClone(accessToken, repoUrl, path + "\\" + repoId)) {
 			try {
-				fileBasedDeployAndRetrieve.createMetadataConnection("retrieve", org_id);
+				fileBasedDeployAndRetrieve.createMetadataConnection("retrieve", org_id, userId);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			
+			String src = path + "\\SFData.zip";
+			String dest = path + "\\SFData";
 			try {
-				fileBasedDeployAndRetrieve.unzip("files\\1\\SF.zip", "files\\1\\SF");
+				fileBasedDeployAndRetrieve.unzip(src , dest);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
-			File targetDir = new File("files\\1\\gitData");
+			File targetDir = new File(path + "\\" + repoId); 
 
-			File sourceDirUnZip = new File("files\\1\\SF");
+			File sourceDirUnZip = new File(dest);
 
 			try {
 				jgitService2.copyDirectory(sourceDirUnZip, targetDir);
@@ -171,28 +188,12 @@ public class GitController {
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
-			final String requestTokenHeader = utilService.readCookie(request, "token");
-			 
-			String username2 = null;
-			String jwtToken = null;
-			// JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
-			if (requestTokenHeader != null) {
-				jwtToken = requestTokenHeader;
-				try {
-					username2 = jwtTokenUtil.getUsernameFromToken(jwtToken);
-				} catch (IllegalArgumentException e) {
-					System.out.println("Unable to get JWT Token");
-				} catch (Exception e) {
-					System.out.println("JWT Token has expired");
-				}
-			} else {
-				System.out.println("JWT Token does not begin with Bearer String");
+			
+			
+			if (jgitService2.gitCommit(path + "\\" + repoId, message, username, repoUrl, userId, org_id)) {
+				return jgitService2.gitPush(accessToken, path + "\\" + repoId);
 			}
 			
-			String userId = userService.getIdByEmail(username2) + "";
-			if (jgitService2.gitCommit(path + "\\1\\gitData", message, username, repoUrl, userId, org_id)) {
-				return jgitService2.gitPush(accessToken, path + "\\1\\gitData");
-			}
 			return true;
 		}
 
@@ -200,11 +201,12 @@ public class GitController {
 	}
 
 	@GetMapping("/deploy/{orgId}")
-	public ModelAndView deployData(@PathVariable String orgId) {
+	public ModelAndView deployData(@PathVariable String orgId, HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView();
+		int userId = utilService.readIdFromToken(request);
 		mv.setViewName("retrieve");
 		try {
-			fileBasedDeployAndRetrieve.createMetadataConnection("deploy", orgId);
+			fileBasedDeployAndRetrieve.createMetadataConnection("deploy", orgId, userId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

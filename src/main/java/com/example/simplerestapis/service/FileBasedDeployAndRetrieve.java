@@ -56,25 +56,26 @@ public class FileBasedDeployAndRetrieve {
 	@Autowired
 	private SalesforceService sfService;
 	
-	@Autowired 
-	private static Environment env;
+//	@Autowired 
+//	private Environment env;
 
 	private MetadataConnection metadataConnection;
 
 	static BufferedReader rdr = new BufferedReader(new InputStreamReader(System.in));
 	private static final long ONE_SECOND = 1000;
 	private static final int MAX_NUM_POLL_REQUESTS = 50;
-	private static final String MANIFEST_FILE = "files\\1\\package.xml";
-	private static final String FOLDER = "files";
+//	private String MANIFEST_FILE = "files\\1\\package.xml";
+	private String PATH = ".\\__data";
 	private static final double API_VERSION = 29.0; 
 	private static final int BUFFER_SIZE = 4096;
 
-	public void createMetadataConnection(String type, String orgId)
+	public void createMetadataConnection(String type, String orgId, int userId)
 			throws RemoteException, Exception {
 		final ConnectorConfig metadataConfig = new ConnectorConfig();
 		metadataConfig.setServiceEndpoint("https://ap16.salesforce.com/services/Soap/m/49.0/");
 		SalesforceOrg sfOrg = sfService.getOrg(orgId);
 		String token;
+		
 		try {
 			token = sfOrg.getAccessToken();
 			System.out.println("token id... " + token);
@@ -82,7 +83,7 @@ public class FileBasedDeployAndRetrieve {
 			this.metadataConnection = new MetadataConnection(metadataConfig);
 
 			if (type == "retrieve")
-				this.retrieveZip();
+				this.retrieveZip(orgId, userId);
 			else
 				this.deployZip();
 		} catch (Exception e) {
@@ -91,16 +92,17 @@ public class FileBasedDeployAndRetrieve {
 			metadataConfig.setSessionId(token);
 			this.metadataConnection = new MetadataConnection(metadataConfig);
 			if (type == "retrieve")
-				this.retrieveZip();
+				this.retrieveZip(orgId, userId);
 			else
 				this.deployZip();
 		}
 	}
 
-	private void retrieveZip() throws RemoteException, Exception {
+	private void retrieveZip(String orgId, int userId) throws RemoteException, Exception {
 		RetrieveRequest retrieveRequest = new RetrieveRequest();
 		// The version in package.xml overrides the version in RetrieveRequest
 		retrieveRequest.setApiVersion(API_VERSION);
+		this.PATH += "\\" + userId + "\\" + orgId;
 		setUnpackaged(retrieveRequest);
 
 		// Start the retrieve operation
@@ -141,7 +143,8 @@ public class FileBasedDeployAndRetrieve {
 			// Write the zip to the file system
 			System.out.println("Writing results to zip file");
 			ByteArrayInputStream bais = new ByteArrayInputStream(result.getZipFile());
-			File resultsFile = new File(this.FOLDER + "\\1" + "\\SF.zip");
+//			this.PATH += "\\" + userId + "\\" + orgId;
+			File resultsFile = new File(this.PATH + "\\SFData.zip");
 			FileOutputStream os = new FileOutputStream(resultsFile);
 			try {
 				ReadableByteChannel src = Channels.newChannel(bais);
@@ -168,6 +171,7 @@ public class FileBasedDeployAndRetrieve {
 	}
 
 	private void setUnpackaged(RetrieveRequest request) throws Exception {
+		String MANIFEST_FILE = this.PATH + "\\package.xml";
 		File unpackedManifest = new File(MANIFEST_FILE);
 		System.out.println("Manifest file: " + unpackedManifest.getAbsolutePath());
 
@@ -265,13 +269,13 @@ public class FileBasedDeployAndRetrieve {
 			throw new Exception("The files were not successfully deployed");
 		}
 
-		System.out.println("The file " + this.FOLDER + " was successfully deployed");
+		System.out.println("The file " + this.PATH + " was successfully deployed");
 	}
 
 	private byte[] readZipFile() throws Exception {
 		// We assume here that you have a deploy.zip file.
 		// See the retrieve sample for how to retrieve a zip file.
-		File deployZip = new File(this.FOLDER);
+		File deployZip = new File(this.PATH);
 		if (!deployZip.exists() || !deployZip.isFile())
 			throw new Exception("Cannot find the zip file to deploy. Looking for " + deployZip.getAbsolutePath());
 
@@ -285,7 +289,7 @@ public class FileBasedDeployAndRetrieve {
 		bos.close();
 		return bos.toByteArray();
 	}
-	
+ 	
 	private void printErrors(DeployResult result, String messageHeader) {
 		DeployDetails deployDetails = result.getDetails();
 
@@ -374,7 +378,7 @@ public class FileBasedDeployAndRetrieve {
             while(ze != null){
                 String fileName = ze.getName();
                 File newFile = new File(destDir + File.separator + fileName);
-                System.out.println("Unzipping to "+newFile.getAbsolutePath());
+                System.out.println("Unzipping to "+ newFile.getAbsolutePath());
                 //create directories for sub directories in zip
                 new File(newFile.getParent()).mkdirs();
                 FileOutputStream fos = new FileOutputStream(newFile);
