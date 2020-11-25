@@ -64,7 +64,7 @@ public class FileBasedDeployAndRetrieve {
 	static BufferedReader rdr = new BufferedReader(new InputStreamReader(System.in));
 	private static final long ONE_SECOND = 1000;
 	private static final int MAX_NUM_POLL_REQUESTS = 50;
-	private String PATH = "F:\\Java\\miniAR\\__data";
+	private String PATH = ".\\__data";
 	private static final double API_VERSION = 29.0; 
 	private static final int BUFFER_SIZE = 4096;
 
