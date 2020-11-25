@@ -171,13 +171,17 @@ public class FileBasedDeployAndRetrieve {
 	}
 
 	private void setUnpackaged(RetrieveRequest request) throws Exception {
+		
 		String MANIFEST_FILE = this.PATH + "\\package.xml";
+//		System.out.println(MANIFEST_FILE);
 		File unpackedManifest = new File(MANIFEST_FILE);
-		System.out.println("Manifest file: " + unpackedManifest.getAbsolutePath());
-
+//		System.out.println(unpackedManifest.getPath());
+//		System.out.println(unpackedManifest.getCanonicalPath());
+//		System.out.println("Manifest file: " + unpackedManifest.getAbsolutePath());
+		System.out.println("Manifest file: " + unpackedManifest.getCanonicalPath());
 		if (!unpackedManifest.exists() || !unpackedManifest.isFile())
 			throw new Exception("Should provide a valid retrieve manifest " + "for unpackaged content. "
-					+ "Looking for " + unpackedManifest.getAbsolutePath());
+					+ "Looking for " + unpackedManifest.getCanonicalPath()); //getAbsolutePath
 		com.sforce.soap.metadata.Package p = parsePackage(unpackedManifest);
 		request.setUnpackaged(p);
 	}
