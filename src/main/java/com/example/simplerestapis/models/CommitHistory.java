@@ -32,6 +32,15 @@ public class CommitHistory {
 	@Column(name="timestamp")
 	Timestamp timestamp;
 	
+	@Column(name="commit_msg")
+	String commit_msg;
+	
+	@Column(name="repo_name")
+	String repo_name;
+	
+	@Column(name = "git_username")
+	String git_username;
+	
 	@ManyToOne(fetch = FetchType.EAGER,optional= false)
 	@JoinColumn(name = "user_id")
 	private User user;
@@ -41,6 +50,65 @@ public class CommitHistory {
 	@ManyToOne(fetch = FetchType.EAGER,optional= false)
 	@JoinColumn(name = "sforg_id")
 	private SalesforceOrg sforg;
+
+
+
+	public String getGit_username() {
+		return git_username;
+	}
+
+
+	public void setGit_username(String git_username) {
+		this.git_username = git_username;
+	}
+
+
+	public CommitHistory(String commit_hash, String repo_url, Timestamp timestamp, String commit_msg, String repo_name,
+			String git_username, User user, SalesforceOrg sforg) {
+		super();
+		this.commit_hash = commit_hash;
+		this.repo_url = repo_url;
+		this.timestamp = timestamp;
+		this.commit_msg = commit_msg;
+		this.repo_name = repo_name;
+		this.git_username = git_username;
+		this.user = user;
+		this.sforg = sforg;
+	}
+
+	public String getCommit_msg() {
+		return commit_msg;
+	}
+
+
+
+
+
+
+	public void setCommit_msg(String commit_msg) {
+		this.commit_msg = commit_msg;
+	}
+
+
+
+
+
+
+	public String getRepo_name() {
+		return repo_name;
+	}
+
+
+
+
+
+
+	public void setRepo_name(String repo_name) {
+		this.repo_name = repo_name;
+	}
+
+
+
 
 
 
@@ -116,14 +184,14 @@ public class CommitHistory {
 
 
 
-	public CommitHistory(String commit_hash, String repo_url, Timestamp timestamp, User user, SalesforceOrg sforg) {
-		super();
-		this.commit_hash = commit_hash;
-		this.repo_url = repo_url;
-		this.timestamp = timestamp;
-		this.user = user;
-		this.sforg = sforg;
-	}
+//	public CommitHistory(String commit_hash, String repo_url, Timestamp timestamp, User user, SalesforceOrg sforg) {
+//		super();
+//		this.commit_hash = commit_hash;
+//		this.repo_url = repo_url;
+//		this.timestamp = timestamp;
+//		this.user = user;
+//		this.sforg = sforg;
+//	}
 
 
 
