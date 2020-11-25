@@ -68,32 +68,44 @@ public class FileBasedDeployAndRetrieve {
 	private static final double API_VERSION = 29.0;
 	private static final int BUFFER_SIZE = 4096;
 
-	public void createMetadataConnection(String type, String orgId, int userId) throws RemoteException, Exception {
+	public void createMetadataConnection(String type, String orgId, int userId, String repoId, String targetOrgId) throws RemoteException, Exception {
 		final ConnectorConfig metadataConfig = new ConnectorConfig();
 		metadataConfig.setServiceEndpoint("https://ap16.salesforce.com/services/Soap/m/49.0/");
-		SalesforceOrg sfOrg = sfService.getOrg(orgId);
+		SalesforceOrg sfOrg;
+		
+		if(type == "retrieve")
+			sfOrg = sfService.getOrg(orgId);
+		else
+			sfOrg = sfService.getOrg(targetOrgId);
+		
 		String token;
-
+		
 		try {
 			token = sfOrg.getAccessToken();
 			System.out.println("token id... " + token);
 			metadataConfig.setSessionId(token);
 			this.metadataConnection = new MetadataConnection(metadataConfig);
-			this.retrieveZip(orgId, userId);
-//			if (type == "retrieve")
-//				
-//			else
-//				this.deployZip();
+			
+			if (type == "retrieve")
+				this.retrieveZip(orgId, userId);
+			else
+			{
+				String path = this.PATH + "\\" + userId + "\\" + orgId + "\\" + repoId + ".zip";
+				this.deployZip(path);
+			}
 		} catch (Exception e) {
 			System.out.println("Token experied...... Generating new token");
 			token = sfService.renewAccess(orgId);
 			metadataConfig.setSessionId(token);
 			this.metadataConnection = new MetadataConnection(metadataConfig);
-			this.retrieveZip(orgId, userId);
-//			if (type == "retrieve")
-//				
-//			else
-//				this.deployZip();
+			
+			if (type == "retrieve")
+				this.retrieveZip(orgId, userId);
+			else
+			{
+				String path = this.PATH + "\\" + userId + "\\" + orgId + "\\" + repoId + ".zip";
+				this.deployZip(path);
+			}
 		}
 	}
 
@@ -228,7 +240,8 @@ public class FileBasedDeployAndRetrieve {
 	}
 
 	public void deployZip(String path) throws RemoteException, Exception {
-		byte zipBytes[] = readZipFile();
+		byte zipBytes[] = readZipFile(path);
+		
 		DeployOptions deployOptions = new DeployOptions();
 		deployOptions.setPerformRetrieve(false);
 		deployOptions.setRollbackOnError(true);
@@ -276,12 +289,12 @@ public class FileBasedDeployAndRetrieve {
 		System.out.println("The file " + this.PATH + " was successfully deployed");
 	}
 
-	private byte[] readZipFile() throws Exception {
+	private byte[] readZipFile(String path) throws Exception {
 		// We assume here that you have a deploy.zip file.
 		// See the retrieve sample for how to retrieve a zip file.
-		File deployZip = new File(this.PATH);
+		File deployZip = new File(path);
 		if (!deployZip.exists() || !deployZip.isFile())
-			throw new Exception("Cannot find the zip file to deploy. Looking for " + deployZip.getAbsolutePath());
+			throw new Exception("Cannot find the zip file to deploy. Looking for " + deployZip.getCanonicalPath());
 
 		FileInputStream fos = new FileInputStream(deployZip);
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
