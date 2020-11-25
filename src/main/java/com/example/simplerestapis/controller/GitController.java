@@ -5,9 +5,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -36,7 +40,6 @@ import com.example.simplerestapis.service.GitStoreService;
 import com.example.simplerestapis.service.JGitService2;
 import com.example.simplerestapis.service.UserService;
 import com.example.simplerestapis.service.UtilService;
-import com.sforce.soap.metadata.CommandActionResponse;
 
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RestController
@@ -194,7 +197,7 @@ public class GitController {
 			}
 			
 			
-			if (jgitService2.gitCommit(path + "\\" + repoId, message, username, repoUrl, userId, org_id, repoName, gitUsername)) {
+			if (jgitService2.gitCommit(path + "\\" + repoId, message, username, repoUrl, userId, org_id, repoName, gitUsername, accId, repoId)) {
 				return jgitService2.gitPush(accessToken, path + "\\" + repoId);
 			}
 			
@@ -220,14 +223,28 @@ public class GitController {
 	@GetMapping("/commit-history")
 	public ArrayList<CommitHistoryResponse> listCommitHistory(HttpServletRequest request){
 		String userId = userService.getIdByEmail(request.getAttribute("email").toString())+"";
+		System.out.println(userId);
 		ArrayList<CommitHistory> commitHistories = commitHistoryService.listCommitHistory(Integer.parseInt(userId));
 		ArrayList<CommitHistoryResponse> chResponse = new ArrayList<CommitHistoryResponse>();
+		System.out.println("this is size of history array:::" + commitHistories.size());
 		for(int i = 0; i<commitHistories.size(); i++) {
+			
 			CommitHistory commitHistory = commitHistories.get(i);
-			CommitHistoryResponse res = new CommitHistoryResponse(commitHistory.getGit_username(), commitHistory.getTimestamp(), commitHistory.getRepo_name(), commitHistory.getRepo_url(), commitHistory.getCommit_hash(), commitHistory.getCommit_msg(), commitHistory.getSforg().getNickName());
+			System.out.println("my id is ......" + commitHistory.toString());
+			CommitHistoryResponse res = new CommitHistoryResponse(commitHistory.getGit_username(), commitHistory.getTimestamp(), commitHistory.getRepo_name(), commitHistory.getRepo_url(), commitHistory.getCommit_hash(), commitHistory.getCommit_msg(), commitHistory.getSforg().getNickName(), commitHistory.getGitAccount().getId() + "", commitHistory.getSforg().getId(), commitHistory.getRepo_id());
 			chResponse.add(res);
 		}
 		
 		return chResponse;
+	}
+	
+	@PostMapping("/test-deploy")
+	public void testDeployment(@RequestBody String obj1, HttpServletRequest request) throws InvalidRemoteException, TransportException, GitAPIException, JSONException, IOException {
+		JSONObject obj = new JSONObject(obj1);
+		String userId = userService.getIdByEmail(request.getAttribute("email").toString())+"";
+		//System.out.println(obj.get("access_token") + " " + obj.get("repo_url") + " " + obj.get("commit_hash")  + " " +  obj.get("path"));
+		String path = env.getProperty("app.data.dirPath") + "\\" + userId  + "\\" + obj.getString("org_id") + "\\" +obj.getString("repo_id");
+		int account_id = Integer.parseInt(obj.getString("account_id")); 
+		jgitService2.testDeploy(gitAccountsService.getUserById(account_id).getAccess_token(), obj.getString("repo_url"), obj.getString("commit_hash")  , path);
 	}
 }

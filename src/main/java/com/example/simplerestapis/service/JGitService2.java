@@ -4,14 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.sql.Date;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +34,10 @@ public class JGitService2 {
 	
 	@Autowired
 	SalesforceService salesforceService; 
+	
+	
+	@Autowired
+	FileBasedDeployAndRetrieve fileBasedDR;
 	
 	
 	public Boolean gitClone(String accessToken, String repoUrl, String path)
@@ -78,7 +82,7 @@ public class JGitService2 {
 		}
 	}
 	
-	public Boolean gitCommit(String path, String message, String username , String repoUrl, int userId, String orgId,String repoName, String gitUsername) {
+	public Boolean gitCommit(String path, String message, String username , String repoUrl, int userId, String orgId,String repoName, String gitUsername, String accountId, String repoId) {
 		
 		try {
 			Git git = Git.open(new File(path));
@@ -89,7 +93,7 @@ public class JGitService2 {
 			Timestamp timestamp =  new Timestamp(x);
 			System.out.println("TimeStamp:" + timestamp);
 			System.out.println(rc.getName());
-			CommitHistory commitHistory  = new CommitHistory(rc.getName(), repoUrl, timestamp ,rc.getFullMessage(),  repoName, gitUsername, userService.getUserById(userId), salesforceService.getOrg(orgId) );
+			CommitHistory commitHistory  = new CommitHistory(rc.getName(), repoUrl, timestamp ,rc.getFullMessage(),  repoName, gitUsername, repoId, userService.getUserById(userId), gitAccountsService.getUserById(Integer.parseInt(accountId)) ,salesforceService.getOrg(orgId) );
 			commitHistoryRepository.save(commitHistory);
 			System.out.println(git.toString());
 			System.out.println("Commit Successful");
@@ -122,5 +126,27 @@ public class JGitService2 {
 			}
 		}
 		file.delete();
+	}
+	
+	public void testDeploy(String accessToken, String repoUrl, String commithash, String path ) throws InvalidRemoteException, TransportException, GitAPIException, IOException {
+		//System.out.println("path value is::" + path);
+		File file = new File(path);
+		if(file.exists()) {
+			deleteFolder(file);
+		}
+		System.out.println(file);
+		Git git = Git.cloneRepository().setURI(repoUrl).setDirectory(file).setCredentialsProvider(new UsernamePasswordCredentialsProvider(accessToken, "")).call();	
+		System.out.println("cloned /.............");
+		System.out.println(git.checkout().setName(commithash).call());
+		File directoryToZip = new File(path);
+		git.close();
+		List<File> fileList = new ArrayList<File>();
+		System.out.println("---Getting references to all files in: " + directoryToZip.getCanonicalPath());
+		fileBasedDR.getAllFiles(directoryToZip, fileList);
+		System.out.println("---Creating zip file");
+		fileBasedDR.writeZipFile(directoryToZip, fileList);
+		System.out.println("---Done");
+		
+		
 	}
 }
