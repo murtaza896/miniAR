@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
+import javax.activation.MimetypesFileTypeMap;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -67,11 +67,18 @@ public class FileBasedDeployAndRetrieve {
 	private String PATH = ".\\__data";
 	private static final double API_VERSION = 29.0;
 	private static final int BUFFER_SIZE = 4096;
-
-	public void createMetadataConnection(String type, String orgId, int userId) throws RemoteException, Exception {
+	List<String> filesListInDir = new ArrayList<String>();
+	public void createMetadataConnection(String type, String orgId, int userId, String repoId, String targetOrgId)
+			throws RemoteException, Exception {
 		final ConnectorConfig metadataConfig = new ConnectorConfig();
 		metadataConfig.setServiceEndpoint("https://ap16.salesforce.com/services/Soap/m/49.0/");
-		SalesforceOrg sfOrg = sfService.getOrg(orgId);
+		SalesforceOrg sfOrg;
+
+		if (type == "retrieve")
+			sfOrg = sfService.getOrg(orgId);
+		else
+			sfOrg = sfService.getOrg(targetOrgId);
+
 		String token;
 
 		try {
@@ -79,21 +86,25 @@ public class FileBasedDeployAndRetrieve {
 			System.out.println("token id... " + token);
 			metadataConfig.setSessionId(token);
 			this.metadataConnection = new MetadataConnection(metadataConfig);
-			this.retrieveZip(orgId, userId);
-//			if (type == "retrieve")
-//				
-//			else
-//				this.deployZip();
+
+			if (type == "retrieve")
+				this.retrieveZip(orgId, userId);
+			else {
+				String path = this.PATH + "\\" + userId + "\\" + orgId + "\\" + repoId + ".zip";
+				this.deployZip(path);
+			}
 		} catch (Exception e) {
 			System.out.println("Token experied...... Generating new token");
 			token = sfService.renewAccess(orgId);
 			metadataConfig.setSessionId(token);
 			this.metadataConnection = new MetadataConnection(metadataConfig);
-			this.retrieveZip(orgId, userId);
-//			if (type == "retrieve")
-//				
-//			else
-//				this.deployZip();
+
+			if (type == "retrieve")
+				this.retrieveZip(orgId, userId);
+			else {
+				String path = this.PATH + "\\" + userId + "\\" + orgId + "\\" + repoId + ".zip";
+				this.deployZip(path);
+			}
 		}
 	}
 
@@ -174,7 +185,7 @@ public class FileBasedDeployAndRetrieve {
 		String MANIFEST_FILE = path + "\\package.xml";
 		System.out.println(MANIFEST_FILE);
 		File unpackedManifest = new File(MANIFEST_FILE);
-	
+
 //		System.out.println(unpackedManifest.getPath());
 //		System.out.println(unpackedManifest.getfPath());
 //		System.out.println("Manifest file: " + unpackedManifest.getAbsolutePath());
@@ -228,7 +239,8 @@ public class FileBasedDeployAndRetrieve {
 	}
 
 	public void deployZip(String path) throws RemoteException, Exception {
-		byte zipBytes[] = readZipFile();
+		byte zipBytes[] = readZipFile(path);
+
 		DeployOptions deployOptions = new DeployOptions();
 		deployOptions.setPerformRetrieve(false);
 		deployOptions.setRollbackOnError(true);
@@ -276,18 +288,22 @@ public class FileBasedDeployAndRetrieve {
 		System.out.println("The file " + this.PATH + " was successfully deployed");
 	}
 
-	private byte[] readZipFile() throws Exception {
+	private byte[] readZipFile(String path) throws Exception {
 		// We assume here that you have a deploy.zip file.
 		// See the retrieve sample for how to retrieve a zip file.
-		File deployZip = new File(this.PATH);
+		File deployZip = new File(path);
+		System.out.println("-------------------------------");
+        System.out.println("Mime Type of " + deployZip.getName() + " is " +
+        		new MimetypesFileTypeMap().getContentType(deployZip));
 		if (!deployZip.exists() || !deployZip.isFile())
-			throw new Exception("Cannot find the zip file to deploy. Looking for " + deployZip.getAbsolutePath());
+			throw new Exception("Cannot find the zip file to deploy. Looking for " + deployZip.getCanonicalPath());
 
 		FileInputStream fos = new FileInputStream(deployZip);
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		int readbyte = -1;
 		while ((readbyte = fos.read()) != -1) {
 			bos.write(readbyte);
+			System.out.print((char) readbyte);
 		}
 		fos.close();
 		bos.close();
@@ -406,68 +422,5 @@ public class FileBasedDeployAndRetrieve {
 
 	}
 
-	public void getAllFiles(File dir, List<File> fileList) {
-		try {
-			File[] files = dir.listFiles();
-			for (File file : files) {
-				if(file.isHidden() || file.getName() == "README.md" || file.getName().charAt(0) == '.' || file.getName() == ".git") continue;
-				fileList.add(file);
-				if (file.isDirectory()) {
-					System.out.println("directory:" + file.getCanonicalPath());
-					getAllFiles(file, fileList);
-				} else {
-					System.out.println("     file:" + file.getCanonicalPath());
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void writeZipFile(File directoryToZip, List<File> fileList) {
-
-		try {
-			FileOutputStream fos = new FileOutputStream(directoryToZip.getCanonicalPath()  + ".zip");
-			ZipOutputStream zos = new ZipOutputStream(fos);
-
-			for (File file : fileList) {
-				System.out.println(file.getName());
-				
-				if (!file.isDirectory()) { // we only zip files, not directories
-					this.addToZip(directoryToZip, file, zos);
-				}
-			}
-
-			zos.close();
-			fos.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void addToZip(File directoryToZip, File file, ZipOutputStream zos) throws FileNotFoundException,
-			IOException {
-
-		FileInputStream fis = new FileInputStream(file);
-
-		// we want the zipEntry's path to be a relative path that is relative
-		// to the directory being zipped, so chop off the rest of the path
-		String zipFilePath = file.getCanonicalPath().substring(directoryToZip.getCanonicalPath().length() + 1,
-				file.getCanonicalPath().length());
-		System.out.println("Writing '" + zipFilePath + "' to zip file");
-		ZipEntry zipEntry = new ZipEntry(zipFilePath);
-		zos.putNextEntry(zipEntry);
-
-		byte[] bytes = new byte[1024];
-		int length;
-		while ((length = fis.read(bytes)) >= 0) {
-			zos.write(bytes, 0, length);
-		}
-
-		zos.closeEntry();
-		fis.close();
-	}
 
 }

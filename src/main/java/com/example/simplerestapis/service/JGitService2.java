@@ -8,6 +8,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.activation.MimetypesFileTypeMap;
+
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.simplerestapis.models.CommitHistory;
 import com.example.simplerestapis.repository.CommitHistoryRepository;
+
+import net.lingala.zip4j.ZipFile;
 
 @Service
 public class JGitService2 {
@@ -128,25 +132,27 @@ public class JGitService2 {
 		file.delete();
 	}
 	
-	public void testDeploy(String accessToken, String repoUrl, String commithash, String path ) throws InvalidRemoteException, TransportException, GitAPIException, IOException {
+	public void testDeploy(String accessToken, String repoUrl, String commithash, String path, String targetOrgId, String repoId, int userId, String orgId ) throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 		//System.out.println("path value is::" + path);
+		
 		File file = new File(path);
 		if(file.exists()) {
 			deleteFolder(file);
 		}
+		
 		System.out.println(file);
 		Git git = Git.cloneRepository().setURI(repoUrl).setDirectory(file).setCredentialsProvider(new UsernamePasswordCredentialsProvider(accessToken, "")).call();	
 		System.out.println("cloned /.............");
 		System.out.println(git.checkout().setName(commithash).call());
-		File directoryToZip = new File(path);
 		git.close();
-		List<File> fileList = new ArrayList<File>();
-		System.out.println("---Getting references to all files in: " + directoryToZip.getCanonicalPath());
-		fileBasedDR.getAllFiles(directoryToZip, fileList);
-		System.out.println("---Creating zip file");
-		fileBasedDR.writeZipFile(directoryToZip, fileList);
-		System.out.println("---Done");
 		
-		
+		new ZipFile(path + ".zip").addFolder(new File(path+"\\unpackaged"));
+        
+		try {
+			fileBasedDR.createMetadataConnection("deploy", orgId, userId, repoId, targetOrgId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

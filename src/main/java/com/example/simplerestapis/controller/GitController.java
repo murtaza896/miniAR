@@ -173,7 +173,7 @@ public class GitController {
 
 		if (jgitService2.gitClone(accessToken, repoUrl, path + "\\" + repoId)) {
 			try {
-				fileBasedDeployAndRetrieve.createMetadataConnection("retrieve", org_id, userId);
+				fileBasedDeployAndRetrieve.createMetadataConnection("retrieve", org_id, userId, repoId, null);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -207,18 +207,18 @@ public class GitController {
 		return false;
 	}
 
-	@GetMapping("/deploy/{orgId}")
-	public ModelAndView deployData(@PathVariable String orgId, HttpServletRequest request) {
-		ModelAndView mv = new ModelAndView();
-		int userId = utilService.readIdFromToken(request);
-		mv.setViewName("retrieve");
-		try {
-			fileBasedDeployAndRetrieve.createMetadataConnection("deploy", orgId, userId);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return mv;
-	}
+//	@GetMapping("/deploy/{orgId}")
+//	public ModelAndView deployData(@PathVariable String orgId, HttpServletRequest request) {
+//		ModelAndView mv = new ModelAndView();
+//		int userId = utilService.readIdFromToken(request);
+//		mv.setViewName("retrieve");
+//		try {
+//			fileBasedDeployAndRetrieve.createMetadataConnection("deploy", orgId, userId);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return mv;
+//	}
 	
 	@GetMapping("/commit-history")
 	public ArrayList<CommitHistoryResponse> listCommitHistory(HttpServletRequest request){
@@ -241,10 +241,18 @@ public class GitController {
 	@PostMapping("/test-deploy")
 	public void testDeployment(@RequestBody String obj1, HttpServletRequest request) throws InvalidRemoteException, TransportException, GitAPIException, JSONException, IOException {
 		JSONObject obj = new JSONObject(obj1);
+		
+		System.out.println(obj.toString());
+		
+		String targetOrgId = obj.getString("target_org_id");
+		String orgId = obj.getString("org_id");
+		String repoId = obj.getString("repo_id");
 		String userId = userService.getIdByEmail(request.getAttribute("email").toString())+"";
 		//System.out.println(obj.get("access_token") + " " + obj.get("repo_url") + " " + obj.get("commit_hash")  + " " +  obj.get("path"));
+		
 		String path = env.getProperty("app.data.dirPath") + "\\" + userId  + "\\" + obj.getString("org_id") + "\\" +obj.getString("repo_id");
+		
 		int account_id = Integer.parseInt(obj.getString("account_id")); 
-		jgitService2.testDeploy(gitAccountsService.getUserById(account_id).getAccess_token(), obj.getString("repo_url"), obj.getString("commit_hash")  , path);
+		jgitService2.testDeploy(gitAccountsService.getUserById(account_id).getAccess_token(), obj.getString("repo_url"), obj.getString("commit_hash"), path, targetOrgId, repoId, Integer.parseInt(userId), orgId);
 	}
 }

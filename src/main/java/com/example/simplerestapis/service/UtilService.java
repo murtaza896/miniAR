@@ -2,7 +2,6 @@ package com.example.simplerestapis.service;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,4 +52,5 @@ public class UtilService {
 		String userId = userService.getIdByEmail(username2) + "";
 		return Integer.parseInt(userId);
 	}
+	
 }
