@@ -10,6 +10,43 @@ public class CommitHistoryResponse {
 	String commit_hash;
 	String commit_msg;
 	String nick_name;
+	String account_id;
+	String org_id;
+	String repo_id; 
+	
+
+	public CommitHistoryResponse(String git_username, Timestamp timestamp, String repo_name, String repo_url,
+			String commit_hash, String commit_msg, String nick_name, String account_id, String org_id, String repo_id) {
+		super();
+		this.git_username = git_username;
+		this.timestamp = timestamp;
+		this.repo_name = repo_name;
+		this.repo_url = repo_url;
+		this.commit_hash = commit_hash;
+		this.commit_msg = commit_msg;
+		this.nick_name = nick_name;
+		this.account_id = account_id;
+		this.org_id = org_id;
+		this.repo_id = repo_id;
+	}
+	public String getRepo_id() {
+		return repo_id;
+	}
+	public void setRepo_id(String repo_id) {
+		this.repo_id = repo_id;
+	}
+	public String getAccount_id() {
+		return account_id;
+	}
+	public void setAccount_id(String account_id) {
+		this.account_id = account_id;
+	}
+	public String getOrg_id() {
+		return org_id;
+	}
+	public void setOrg_id(String org_id) {
+		this.org_id = org_id;
+	}
 	public String getGit_username() {
 		return git_username;
 	}
@@ -52,17 +89,17 @@ public class CommitHistoryResponse {
 	public void setNick_name(String nick_name) {
 		this.nick_name = nick_name;
 	}
-	public CommitHistoryResponse(String git_username, Timestamp timestamp, String repo_name, String repo_url,
-			String commit_hash, String commit_msg, String nick_name) {
-		super();
-		this.git_username = git_username;
-		this.timestamp = timestamp;
-		this.repo_name = repo_name;
-		this.repo_url = repo_url;
-		this.commit_hash = commit_hash;
-		this.commit_msg = commit_msg;
-		this.nick_name = nick_name;
-	}
+//	public CommitHistoryResponse(String git_username, Timestamp timestamp, String repo_name, String repo_url,
+//			String commit_hash, String commit_msg, String nick_name) {
+//		super();
+//		this.git_username = git_username;
+//		this.timestamp = timestamp;
+//		this.repo_name = repo_name;
+//		this.repo_url = repo_url;
+//		this.commit_hash = commit_hash;
+//		this.commit_msg = commit_msg;
+//		this.nick_name = nick_name;
+//	}
 	public CommitHistoryResponse() {
 		super();
 		// TODO Auto-generated constructor stub

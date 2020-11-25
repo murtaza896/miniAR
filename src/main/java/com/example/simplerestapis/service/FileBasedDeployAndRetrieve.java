@@ -101,8 +101,8 @@ public class FileBasedDeployAndRetrieve {
 		RetrieveRequest retrieveRequest = new RetrieveRequest();
 		// The version in package.xml overrides the version in RetrieveRequest
 		retrieveRequest.setApiVersion(API_VERSION);
-		this.PATH += "\\" + userId + "\\" + orgId;
-		setUnpackaged(retrieveRequest);
+		String path = this.PATH + "\\" + userId + "\\" + orgId;
+		setUnpackaged(retrieveRequest, path);
 
 		// Start the retrieve operation
 		AsyncResult asyncResult = metadataConnection.retrieve(retrieveRequest);
@@ -143,7 +143,7 @@ public class FileBasedDeployAndRetrieve {
 			System.out.println("Writing results to zip file");
 			ByteArrayInputStream bais = new ByteArrayInputStream(result.getZipFile());
 //			this.PATH += "\\" + userId + "\\" + orgId;
-			File resultsFile = new File(this.PATH + "\\SFData.zip");
+			File resultsFile = new File(path + "\\SFData.zip");
 			FileOutputStream os = new FileOutputStream(resultsFile);
 			try {
 				ReadableByteChannel src = Channels.newChannel(bais);
@@ -169,11 +169,12 @@ public class FileBasedDeployAndRetrieve {
 		}
 	}
 
-	private void setUnpackaged(RetrieveRequest request) throws Exception {
+	private void setUnpackaged(RetrieveRequest request, String path) throws Exception {
 
-		String MANIFEST_FILE = this.PATH + "\\package.xml";
-//		System.out.println(MANIFEST_FILE);
+		String MANIFEST_FILE = path + "\\package.xml";
+		System.out.println(MANIFEST_FILE);
 		File unpackedManifest = new File(MANIFEST_FILE);
+	
 //		System.out.println(unpackedManifest.getPath());
 //		System.out.println(unpackedManifest.getfPath());
 //		System.out.println("Manifest file: " + unpackedManifest.getAbsolutePath());
