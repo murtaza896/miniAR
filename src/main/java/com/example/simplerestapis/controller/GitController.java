@@ -5,9 +5,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -36,7 +39,6 @@ import com.example.simplerestapis.service.GitStoreService;
 import com.example.simplerestapis.service.JGitService2;
 import com.example.simplerestapis.service.UserService;
 import com.example.simplerestapis.service.UtilService;
-import com.sforce.soap.metadata.CommandActionResponse;
 
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RestController
@@ -229,5 +231,15 @@ public class GitController {
 		}
 		
 		return chResponse;
+	}
+	
+	@PostMapping("/test-deploy")
+	public void testDeployment(@RequestBody String obj1) throws InvalidRemoteException, TransportException, GitAPIException {
+		JSONObject obj = new JSONObject(obj1);
+
+		System.out.println(obj.get("access_token") + " " + obj.get("repo_url") + " " + obj.get("commit_hash")  + " " +  obj.get("path"));
+		jgitService2.testDeploy(obj.getString("access_token"), obj.getString("repo_url"), obj.getString("commit_hash")  , obj.getString("path"));
+		
+		
 	}
 }

@@ -12,6 +12,8 @@ import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,5 +124,13 @@ public class JGitService2 {
 			}
 		}
 		file.delete();
+	}
+	
+	public void testDeploy(String accessToken, String repoUrl, String commithash, String path ) throws InvalidRemoteException, TransportException, GitAPIException {
+		File file = new File(path);
+		System.out.println(file);
+		Git git = Git.cloneRepository().setURI(repoUrl).setDirectory(file).setCredentialsProvider(new UsernamePasswordCredentialsProvider(accessToken, "")).call();	
+		System.out.println(git.checkout().setName(commithash).call());
+		
 	}
 }

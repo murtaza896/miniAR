@@ -1,6 +1,5 @@
 package com.example.simplerestapis.service;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,8 +24,12 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -64,7 +67,7 @@ public class FileBasedDeployAndRetrieve {
 	static BufferedReader rdr = new BufferedReader(new InputStreamReader(System.in));
 	private static final long ONE_SECOND = 1000;
 	private static final int MAX_NUM_POLL_REQUESTS = 50;
-	private String PATH = "F:\\Java\\miniAR\\__data";
+	private String PATH = ".\\__data";
 	private static final double API_VERSION = 29.0; 
 	private static final int BUFFER_SIZE = 4096;
 
@@ -75,26 +78,26 @@ public class FileBasedDeployAndRetrieve {
 		SalesforceOrg sfOrg = sfService.getOrg(orgId);
 		String token;
 		
-		try {
-			token = sfOrg.getAccessToken();
-			System.out.println("token id... " + token);
-			metadataConfig.setSessionId(token);
-			this.metadataConnection = new MetadataConnection(metadataConfig);
-
-			if (type == "retrieve")
-				this.retrieveZip(orgId, userId);
-			else
-				this.deployZip();
-		} catch (Exception e) {
-			System.out.println("Token experied...... Generating new token");
-			token = sfService.renewAccess(orgId);
-			metadataConfig.setSessionId(token);
-			this.metadataConnection = new MetadataConnection(metadataConfig);
-			if (type == "retrieve")
-				this.retrieveZip(orgId, userId);
-			else
-				this.deployZip();
-		}
+//		try {
+//			token = sfOrg.getAccessToken();
+//			System.out.println("token id... " + token);
+//			metadataConfig.setSessionId(token);
+//			this.metadataConnection = new MetadataConnection(metadataConfig);
+//
+//			if (type == "retrieve")
+//				this.retrieveZip(orgId, userId);
+//			else
+//				this.deployZip();
+//		} catch (Exception e) {
+//			System.out.println("Token experied...... Generating new token");
+//			token = sfService.renewAccess(orgId);
+//			metadataConfig.setSessionId(token);
+//			this.metadataConnection = new MetadataConnection(metadataConfig);
+//			if (type == "retrieve")
+//				this.retrieveZip(orgId, userId);
+//			else
+////				this.deployZip();
+//		}
 	}
 
 	private void retrieveZip(String orgId, int userId) throws RemoteException, Exception {
@@ -175,7 +178,7 @@ public class FileBasedDeployAndRetrieve {
 //		System.out.println(MANIFEST_FILE);
 		File unpackedManifest = new File(MANIFEST_FILE);
 //		System.out.println(unpackedManifest.getPath());
-//		System.out.println(unpackedManifest.getCanonicalPath());
+//		System.out.println(unpackedManifest.getfPath());
 //		System.out.println("Manifest file: " + unpackedManifest.getAbsolutePath());
 		System.out.println("Manifest file: " + unpackedManifest.getCanonicalPath());
 		if (!unpackedManifest.exists() || !unpackedManifest.isFile())
@@ -226,7 +229,12 @@ public class FileBasedDeployAndRetrieve {
 		}
 	}
 
-	public void deployZip() throws RemoteException, Exception {
+	public void deployZip(String accessToken, String repoUrl, String path, String commithash) throws RemoteException, Exception {
+		Git git = Git.cloneRepository()
+				.setURI(repoUrl)
+				.setCredentialsProvider(new UsernamePasswordCredentialsProvider(accessToken, ""))
+				.setDirectory(new File(path))
+				.call();
 		byte zipBytes[] = readZipFile();
 		DeployOptions deployOptions = new DeployOptions();
 		deployOptions.setPerformRetrieve(false);
@@ -403,4 +411,8 @@ public class FileBasedDeployAndRetrieve {
         }
         
     }
+	
+	
+	
+
 }
