@@ -4,11 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.sql.Date;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -36,6 +34,9 @@ public class JGitService2 {
 	
 	@Autowired
 	SalesforceService salesforceService; 
+	
+	@Autowired
+	FileBasedDeployAndRetrieve fileBasedDR;
 	
 	
 	public Boolean gitClone(String accessToken, String repoUrl, String path)
@@ -126,11 +127,22 @@ public class JGitService2 {
 		file.delete();
 	}
 	
-	public void testDeploy(String accessToken, String repoUrl, String commithash, String path ) throws InvalidRemoteException, TransportException, GitAPIException {
+	public void testDeploy(String accessToken, String repoUrl, String commithash, String path ) throws InvalidRemoteException, TransportException, GitAPIException, IOException {
+		
 		File file = new File(path);
 		System.out.println(file);
 		Git git = Git.cloneRepository().setURI(repoUrl).setDirectory(file).setCredentialsProvider(new UsernamePasswordCredentialsProvider(accessToken, "")).call();	
+		
 		System.out.println(git.checkout().setName(commithash).call());
+		File directoryToZip = new File(path);
+
+		List<File> fileList = new ArrayList<File>();
+		System.out.println("---Getting references to all files in: " + directoryToZip.getCanonicalPath());
+		fileBasedDR.getAllFiles(directoryToZip, fileList);
+		System.out.println("---Creating zip file");
+		fileBasedDR.writeZipFile(directoryToZip, fileList);
+		System.out.println("---Done");
+
 		
 	}
 }

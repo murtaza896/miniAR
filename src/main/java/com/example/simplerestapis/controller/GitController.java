@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -234,7 +235,7 @@ public class GitController {
 	}
 	
 	@PostMapping("/test-deploy")
-	public void testDeployment(@RequestBody String obj1) throws InvalidRemoteException, TransportException, GitAPIException {
+	public void testDeployment(@RequestBody String obj1) throws InvalidRemoteException, TransportException, GitAPIException, JSONException, IOException {
 		JSONObject obj = new JSONObject(obj1);
 
 		System.out.println(obj.get("access_token") + " " + obj.get("repo_url") + " " + obj.get("commit_hash")  + " " +  obj.get("path"));
