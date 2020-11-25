@@ -78,7 +78,7 @@ public class JGitService2 {
 		}
 	}
 	
-	public Boolean gitCommit(String path, String message, String username , String repoUrl, int userId, String orgId) {
+	public Boolean gitCommit(String path, String message, String username , String repoUrl, int userId, String orgId,String repoName, String gitUsername) {
 		
 		try {
 			Git git = Git.open(new File(path));
@@ -89,7 +89,7 @@ public class JGitService2 {
 			Timestamp timestamp =  new Timestamp(x);
 			System.out.println("TimeStamp:" + timestamp);
 			System.out.println(rc.getName());
-			CommitHistory commitHistory  = new CommitHistory(rc.getName(), repoUrl, timestamp , userService.getUserById(userId), salesforceService.getOrg(orgId) );
+			CommitHistory commitHistory  = new CommitHistory(rc.getName(), repoUrl, timestamp ,rc.getFullMessage(),  repoName, gitUsername, userService.getUserById(userId), salesforceService.getOrg(orgId) );
 			commitHistoryRepository.save(commitHistory);
 			System.out.println(git.toString());
 			System.out.println("Commit Successful");

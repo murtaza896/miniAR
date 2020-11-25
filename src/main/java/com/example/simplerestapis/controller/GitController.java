@@ -26,6 +26,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.example.simplerestapis.config.JwtTokenUtil;
 import com.example.simplerestapis.models.CommitHistory;
+import com.example.simplerestapis.models.CommitHistoryResponse;
 import com.example.simplerestapis.models.GitAccounts;
 import com.example.simplerestapis.models.GitStore;
 import com.example.simplerestapis.service.CommitHistoryService;
@@ -35,6 +36,7 @@ import com.example.simplerestapis.service.GitStoreService;
 import com.example.simplerestapis.service.JGitService2;
 import com.example.simplerestapis.service.UserService;
 import com.example.simplerestapis.service.UtilService;
+import com.sforce.soap.metadata.CommandActionResponse;
 
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RestController
@@ -154,6 +156,8 @@ public class GitController {
 		String accId = data.get("acc_id");
 		String message = data.get("commit_msg");
 		String repoId = data.get("repo_id");
+		String repoName = data.get("repo_name");
+		String gitUsername = data.get("git_username");
 		int userId = utilService.readIdFromToken(request);
 		
 //		String path = env.getProperty("app.sf.files.uri");
@@ -190,7 +194,7 @@ public class GitController {
 			}
 			
 			
-			if (jgitService2.gitCommit(path + "\\" + repoId, message, username, repoUrl, userId, org_id)) {
+			if (jgitService2.gitCommit(path + "\\" + repoId, message, username, repoUrl, userId, org_id, repoName, gitUsername)) {
 				return jgitService2.gitPush(accessToken, path + "\\" + repoId);
 			}
 			
@@ -214,8 +218,16 @@ public class GitController {
 	}
 	
 	@GetMapping("/commit-history")
-	public ArrayList<CommitHistory> listCommitHistory(HttpServletRequest request){
+	public ArrayList<CommitHistoryResponse> listCommitHistory(HttpServletRequest request){
 		String userId = userService.getIdByEmail(request.getAttribute("email").toString())+"";
-		return commitHistoryService.listCommitHistory(Integer.parseInt(userId));
+		ArrayList<CommitHistory> commitHistories = commitHistoryService.listCommitHistory(Integer.parseInt(userId));
+		ArrayList<CommitHistoryResponse> chResponse = new ArrayList<CommitHistoryResponse>();
+		for(int i = 0; i<commitHistories.size(); i++) {
+			CommitHistory commitHistory = commitHistories.get(i);
+			CommitHistoryResponse res = new CommitHistoryResponse(commitHistory.getGit_username(), commitHistory.getTimestamp(), commitHistory.getRepo_name(), commitHistory.getRepo_url(), commitHistory.getCommit_hash(), commitHistory.getCommit_msg(), commitHistory.getSforg().getNickName());
+			chResponse.add(res);
+		}
+		
+		return chResponse;
 	}
 }
