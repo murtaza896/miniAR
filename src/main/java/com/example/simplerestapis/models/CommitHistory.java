@@ -214,6 +214,8 @@ public class CommitHistory {
 
 
 	public Timestamp getTimestamp() {
+		System.out.println(timestamp.toInstant());
+		System.out.println(timestamp.getTime());
 		return timestamp;
 	}
 

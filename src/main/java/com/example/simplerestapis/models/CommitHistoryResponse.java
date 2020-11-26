@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 public class CommitHistoryResponse {
 	
 	String git_username;
-	Timestamp timestamp;
+	long timestamp;
 	String repo_name;
 	String repo_url;
 	String commit_hash;
@@ -19,7 +19,7 @@ public class CommitHistoryResponse {
 			String commit_hash, String commit_msg, String nick_name, String account_id, String org_id, String repo_id) {
 		super();
 		this.git_username = git_username;
-		this.timestamp = timestamp;
+		this.timestamp = timestamp.getTime();
 		this.repo_name = repo_name;
 		this.repo_url = repo_url;
 		this.commit_hash = commit_hash;
@@ -53,10 +53,10 @@ public class CommitHistoryResponse {
 	public void setGit_username(String git_username) {
 		this.git_username = git_username;
 	}
-	public Timestamp getTimestamp() {
+	public long getTimestamp() {
 		return timestamp;
 	}
-	public void setTimestamp(Timestamp timestamp) {
+	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
 	}
 	public String getRepo_name() {
