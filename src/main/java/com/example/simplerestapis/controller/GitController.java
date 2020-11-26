@@ -239,20 +239,27 @@ public class GitController {
 	}
 	
 	@PostMapping("/test-deploy")
-	public void testDeployment(@RequestBody String obj1, HttpServletRequest request) throws InvalidRemoteException, TransportException, GitAPIException, JSONException, IOException {
-		JSONObject obj = new JSONObject(obj1);
+	public ResponseEntity<?> testDeployment(@RequestBody String obj1, HttpServletRequest request) throws InvalidRemoteException, TransportException, GitAPIException, JSONException, IOException {
+		try {
+			JSONObject obj = new JSONObject(obj1);
+			
+			System.out.println(obj.toString());
+			
+			String targetOrgId = obj.getString("target_org_id");
+			String orgId = obj.getString("org_id");
+			String repoId = obj.getString("repo_id");
+			String userId = userService.getIdByEmail(request.getAttribute("email").toString())+"";
+			//System.out.println(obj.get("access_token") + " " + obj.get("repo_url") + " " + obj.get("commit_hash")  + " " +  obj.get("path"));
+			
+			String path = env.getProperty("app.data.dirPath") + "\\" + userId  + "\\" + obj.getString("org_id") + "\\" +obj.getString("repo_id");
+			
+			int account_id = Integer.parseInt(obj.getString("account_id")); 
+			jgitService2.testDeploy(gitAccountsService.getUserById(account_id).getAccess_token(), obj.getString("repo_url"), obj.getString("commit_hash"), path, targetOrgId, repoId, Integer.parseInt(userId), orgId);
+			return new ResponseEntity<>( HttpStatus.OK);
+		}
+		catch(Exception e) {
+			return new ResponseEntity<>( HttpStatus.BAD_REQUEST);
+		}
 		
-		System.out.println(obj.toString());
-		
-		String targetOrgId = obj.getString("target_org_id");
-		String orgId = obj.getString("org_id");
-		String repoId = obj.getString("repo_id");
-		String userId = userService.getIdByEmail(request.getAttribute("email").toString())+"";
-		//System.out.println(obj.get("access_token") + " " + obj.get("repo_url") + " " + obj.get("commit_hash")  + " " +  obj.get("path"));
-		
-		String path = env.getProperty("app.data.dirPath") + "\\" + userId  + "\\" + obj.getString("org_id") + "\\" +obj.getString("repo_id");
-		
-		int account_id = Integer.parseInt(obj.getString("account_id")); 
-		jgitService2.testDeploy(gitAccountsService.getUserById(account_id).getAccess_token(), obj.getString("repo_url"), obj.getString("commit_hash"), path, targetOrgId, repoId, Integer.parseInt(userId), orgId);
 	}
 }
