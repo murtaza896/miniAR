@@ -51,6 +51,16 @@ public class UserController {
 	@Autowired
 	private UserService jwtInMemoryUserDetailsService;
 	
+	@GetMapping("/get-user")
+	public ResponseEntity<User> getUser(@RequestParam(name="email") String email)
+	{
+		User user = userService.getByemail(email);
+		user.setPassword("null");
+		ResponseEntity<User> res = new ResponseEntity<User>(user, HttpStatus.OK);
+		
+		return res;
+	}
+	
 	@GetMapping("/check-existence")
 	public int checkExistence(@RequestParam(name="email") String email)
 	{
