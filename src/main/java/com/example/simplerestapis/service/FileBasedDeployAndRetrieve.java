@@ -90,7 +90,7 @@ public class FileBasedDeployAndRetrieve {
 			if (type == "retrieve")
 				this.retrieveZip(orgId, userId);
 			else {
-				String path = this.PATH + "\\" + userId + "\\" + orgId + "\\" + repoId + ".zip";
+				String path = this.PATH + orgId + File.separator + userId + File.separator + orgId + File.separator + repoId + ".zip";
 				this.deployZip(path);
 			}
 		} catch (Exception e) {
@@ -102,8 +102,9 @@ public class FileBasedDeployAndRetrieve {
 			if (type == "retrieve")
 				this.retrieveZip(orgId, userId);
 			else {
-				String path = this.PATH + "\\" + userId + "\\" + orgId + "\\" + repoId + ".zip";
-				this.deployZip(path);
+				String path = this.PATH + File.separator + userId + File.separator + orgId + File.separator+ repoId + ".zip";
+				DeployResult dr = this.deployZip(path);
+				System.out.println("I m in createMetadataConnection: " + dr.isSuccess());
 			}
 		}
 	}
@@ -112,7 +113,7 @@ public class FileBasedDeployAndRetrieve {
 		RetrieveRequest retrieveRequest = new RetrieveRequest();
 		// The version in package.xml overrides the version in RetrieveRequest
 		retrieveRequest.setApiVersion(API_VERSION);
-		String path = this.PATH + "\\" + userId + "\\" + orgId;
+		String path = this.PATH + File.separator + userId + File.separator + orgId;
 		setUnpackaged(retrieveRequest, path);
 
 		// Start the retrieve operation
@@ -238,7 +239,7 @@ public class FileBasedDeployAndRetrieve {
 		}
 	}
 
-	public void deployZip(String path) throws RemoteException, Exception {
+	public DeployResult deployZip(String path) throws RemoteException, Exception {
 		byte zipBytes[] = readZipFile(path);
 
 		DeployOptions deployOptions = new DeployOptions();
@@ -284,8 +285,10 @@ public class FileBasedDeployAndRetrieve {
 			printErrors(deployResult, "Final list of failures:\n");
 			throw new Exception("The files were not successfully deployed");
 		}
-
+		
+		
 		System.out.println("The file " + this.PATH + " was successfully deployed");
+		return deployResult;
 	}
 
 	private byte[] readZipFile(String path) throws Exception {
