@@ -129,7 +129,7 @@ public class GitController {
 		int userId = utilService.readIdFromToken(request);
 		 
 		
-		String path = env.getProperty("app.data.dirPath") + "\\" + userId + "\\" + orgId + "\\package.xml" ;
+		String path = env.getProperty("app.data.dirPath") + File.separator + userId + File.separator + orgId + File.separator + "package.xml" ;
 //		path = context.getRealPath(path);
 		
 		
@@ -164,28 +164,28 @@ public class GitController {
 		int userId = utilService.readIdFromToken(request);
 		
 //		String path = env.getProperty("app.sf.files.uri");
-		String path = env.getProperty("app.data.dirPath") + "\\" + userId  + "\\" + org_id;
+		String path = env.getProperty("app.data.dirPath") + File.separator + userId  + File.separator + org_id;
 		
 		GitAccounts gitAccount = gitAccountsService.getUserById(Integer.parseInt(accId));
 
 		String accessToken = gitAccount.getAccess_token();
 		String username = gitAccount.getUsername();
 
-		if (jgitService2.gitClone(accessToken, repoUrl, path + "\\" + repoId)) {
+		if (jgitService2.gitClone(accessToken, repoUrl, path + File.separator + repoId)) {
 			try {
 				fileBasedDeployAndRetrieve.createMetadataConnection("retrieve", org_id, userId, repoId, null);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			
-			String src = path + "\\SFData.zip";
-			String dest = path + "\\SFData";
+			String src = path + File.separator + "SFData.zip";
+			String dest = path + File.separator + "SFData";
 			try {
 				fileBasedDeployAndRetrieve.unzip(src , dest);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
-			File targetDir = new File(path + "\\" + repoId); 
+			File targetDir = new File(path + File.separator + repoId); 
 
 			File sourceDirUnZip = new File(dest);
 
@@ -197,8 +197,8 @@ public class GitController {
 			}
 			
 			
-			if (jgitService2.gitCommit(path + "\\" + repoId, message, username, repoUrl, userId, org_id, repoName, gitUsername, accId, repoId)) {
-				return jgitService2.gitPush(accessToken, path + "\\" + repoId);
+			if (jgitService2.gitCommit(path + File.separator + repoId, message, username, repoUrl, userId, org_id, repoName, gitUsername, accId, repoId)) {
+				return jgitService2.gitPush(accessToken, path + File.separator + repoId);
 			}
 			
 			return true;
@@ -251,7 +251,7 @@ public class GitController {
 			String userId = userService.getIdByEmail(request.getAttribute("email").toString())+"";
 			//System.out.println(obj.get("access_token") + " " + obj.get("repo_url") + " " + obj.get("commit_hash")  + " " +  obj.get("path"));
 			
-			String path = env.getProperty("app.data.dirPath") + "\\" + userId  + "\\" + obj.getString("org_id") + "\\" +obj.getString("repo_id");
+			String path = env.getProperty("app.data.dirPath") + File.separator + userId  + File.separator + obj.getString("org_id") + File.separator +obj.getString("repo_id");
 			
 			int account_id = Integer.parseInt(obj.getString("account_id")); 
 			jgitService2.testDeploy(gitAccountsService.getUserById(account_id).getAccess_token(), obj.getString("repo_url"), obj.getString("commit_hash"), path, targetOrgId, repoId, Integer.parseInt(userId), orgId);

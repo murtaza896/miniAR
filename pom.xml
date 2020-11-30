@@ -20,6 +20,25 @@
 	</properties>
 
 	<dependencies>
+	
+		<dependency>
+			<groupId>com.force.api</groupId>
+			<artifactId>force-wsc</artifactId>
+			<version>50.0.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.enterprise.api</groupId>
+			<artifactId>enterprise</artifactId>
+			<version>1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.metadata.api</groupId>
+			<artifactId>metadata</artifactId>
+			<version>1</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>bootstrap</artifactId>
