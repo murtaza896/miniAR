@@ -240,8 +240,9 @@ public class GitController {
 	
 	@PostMapping("/test-deploy")
 	public ResponseEntity<?> testDeployment(@RequestBody String obj1, HttpServletRequest request) throws InvalidRemoteException, TransportException, GitAPIException, JSONException, IOException {
+		JSONObject obj = new JSONObject(obj1);
 		try {
-			JSONObject obj = new JSONObject(obj1);
+			//obj = new JSONObject(obj1);
 			
 			System.out.println(obj.toString());
 			
@@ -255,10 +256,11 @@ public class GitController {
 			
 			int account_id = Integer.parseInt(obj.getString("account_id")); 
 			jgitService2.testDeploy(gitAccountsService.getUserById(account_id).getAccess_token(), obj.getString("repo_url"), obj.getString("commit_hash"), path, targetOrgId, repoId, Integer.parseInt(userId), orgId);
-			return new ResponseEntity<>( HttpStatus.OK);
+			System.out.println(obj);
+			return new ResponseEntity<>(obj.toMap(), HttpStatus.OK);
 		}
 		catch(Exception e) {
-			return new ResponseEntity<>( HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(obj.toMap(), HttpStatus.BAD_REQUEST);
 		}
 		
 	}
