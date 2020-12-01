@@ -159,6 +159,8 @@ public class JGitService2 {
 		
 		new ZipFile(path + ".zip").addFolder(new File(path+"\\unpackaged"));
 		String url = userService.getUserById(userId).getWebhook_url();
+		String org_nickname = salesforceService.getOrg(orgId).getNickName();
+		String target_nickname = salesforceService.getOrg(targetOrgId).getNickName();
 		try {
 			fileBasedDR.createMetadataConnection("deploy", orgId, userId, repoId, targetOrgId);
 			if(url!=null) {
@@ -176,10 +178,10 @@ public class JGitService2 {
 						"      \"activityImage\": \"https://cdn2.iconfinder.com/data/icons/web-and-apps-interface/32/OK-512.png\",\r\n" + 
 						"      \"facts\": [{\r\n" + 
 						"          \"name\": \"From\",\r\n" + 
-						"          \"value\": \"" + orgId + "\""+
+						"          \"value\": \"" + org_nickname + "\""+
 						"      }, {\r\n" + 
 						"          \"name\": \"To\",\r\n" + 
-						"          \"value\": \"" + targetOrgId + "\""+
+						"          \"value\": \"" + target_nickname + "\""+
 						"      }, {\r\n" + 
 						"          \"name\": \"Status\",\r\n" + 
 						"          \"value\": \"Successful\"\r\n" + 
@@ -207,10 +209,10 @@ public class JGitService2 {
 						"      \"activityImage\": \"https://cdn3.iconfinder.com/data/icons/simple-web-navigation/165/cross-512.png\",\r\n" + 
 						"      \"facts\": [{\r\n" + 
 						"          \"name\": \"From\",\r\n" + 
-						"          \"value\": \"" + orgId + "\""+
+						"          \"value\": \"" + org_nickname + "\""+
 						"      }, {\r\n" + 
 						"          \"name\": \"To\",\r\n" + 
-						"          \"value\": \"" + targetOrgId + "\""+
+						"          \"value\": \"" + target_nickname + "\""+
 						"      }, {\r\n" + 
 						"          \"name\": \"Status\",\r\n" + 
 						"          \"value\": \"Failed\"\r\n" + 
