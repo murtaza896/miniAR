@@ -32,8 +32,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.example.simplerestapis.models.CommitHistory;
 import com.example.simplerestapis.repository.CommitHistoryRepository;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 import net.lingala.zip4j.ZipFile;
 
@@ -145,7 +143,7 @@ public class JGitService2 {
 		file.delete();
 	}
 	
-	public void testDeploy(String accessToken, String repoUrl, String commithash, String path, String targetOrgId, String repoId, int userId, String orgId ) throws InvalidRemoteException, TransportException, GitAPIException, IOException, UnirestException {
+	public void testDeploy(String accessToken, String repoUrl, String commithash, String path, String targetOrgId, String repoId, int userId, String orgId ) throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 		//System.out.println("path value is::" + path);
 		
 		File file = new File(path);
