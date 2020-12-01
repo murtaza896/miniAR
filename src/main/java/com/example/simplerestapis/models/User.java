@@ -37,6 +37,9 @@ public class User implements UserDetails {
 	@Column(name="password")
 	private String password;
 	
+	@Column(name="webhook_url")
+	String webhook_url;
+	
 	public User(String first_name, String last_name, String email, String password) {
 		super();
 //		this.id = id;
@@ -46,6 +49,15 @@ public class User implements UserDetails {
 		this.password = password;
 	}
 	
+	public User(int id, String first_name, String last_name, String email, String password) {
+		super();
+		this.id = id;
+		this.first_name = first_name;
+		this.last_name = last_name;
+		this.email = email;
+		this.password = password;
+	}
+
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", first_name=" + first_name + ", last_name=" + last_name + ", email=" + email
@@ -55,6 +67,16 @@ public class User implements UserDetails {
 	public User() {
 		
 	}
+	
+	
+	public String getWebhook_url() {
+		return webhook_url;
+	}
+
+	public void setWebhook_url(String webhook_url) {
+		this.webhook_url = webhook_url;
+	}
+
 	public int getId() {
 		return id;
 	}

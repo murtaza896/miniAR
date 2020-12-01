@@ -93,7 +93,7 @@ public class UserService implements UserDetailsService {
 		existing_user.setLast_name(new_user.getLast_name());
 		existing_user.setEmail(new_user.getEmail());
 		existing_user.setPassword(new_user.getPassword());
-
+		existing_user.setWebhook_url(new_user.getWebhook_url());
 		return repository.save(existing_user);
 	}
 
