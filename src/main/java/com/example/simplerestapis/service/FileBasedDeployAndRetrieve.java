@@ -94,7 +94,7 @@ public class FileBasedDeployAndRetrieve {
 			}
 		} catch (Exception e) {
 			System.out.println("Token experied...... Generating new token");
-			token = sfService.renewAccess(orgId);
+			token = sfService.renewAccess(targetOrgId);
 			metadataConfig.setSessionId(token);
 			this.metadataConnection = new MetadataConnection(metadataConfig);
 
