@@ -2,7 +2,6 @@ package com.example.simplerestapis.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
@@ -157,7 +156,7 @@ public class JGitService2 {
 		System.out.println(git.checkout().setName(commithash).call());
 		git.close();
 		
-		new ZipFile(path + ".zip").addFolder(new File(path+"\\unpackaged"));
+		new ZipFile(path + ".zip").addFolder(new File(path+ File.separator + "unpackaged"));
 		String url = userService.getUserById(userId).getWebhook_url();
 		String org_nickname = salesforceService.getOrg(orgId).getNickName();
 		String target_nickname = salesforceService.getOrg(targetOrgId).getNickName();

@@ -63,7 +63,7 @@ public class FileBasedDeployAndRetrieve {
 	static BufferedReader rdr = new BufferedReader(new InputStreamReader(System.in));
 	private static final long ONE_SECOND = 1000;
 	private static final int MAX_NUM_POLL_REQUESTS = 50;
-	private String PATH = ".\\__data";
+	private String PATH = "/projects/__data";
 	private static final double API_VERSION = 29.0;
 	private static final int BUFFER_SIZE = 4096;
 	List<String> filesListInDir = new ArrayList<String>();
@@ -94,13 +94,16 @@ public class FileBasedDeployAndRetrieve {
 			}
 		} catch (Exception e) {
 			System.out.println("Token experied...... Generating new token");
-			token = sfService.renewAccess(targetOrgId);
-			metadataConfig.setSessionId(token);
-			this.metadataConnection = new MetadataConnection(metadataConfig);
-
-			if (type == "retrieve")
+			if (type == "retrieve"){
+				token = sfService.renewAccess(orgId);
+				metadataConfig.setSessionId(token);
+				this.metadataConnection = new MetadataConnection(metadataConfig);
 				this.retrieveZip(orgId, userId);
+			}				
 			else {
+				token = sfService.renewAccess(targetOrgId);
+				metadataConfig.setSessionId(token);
+				this.metadataConnection = new MetadataConnection(metadataConfig);
 				String path = this.PATH + File.separator + userId + File.separator + orgId + File.separator+ repoId + ".zip";
 				DeployResult dr = this.deployZip(path);
 				System.out.println("I m in createMetadataConnection: " + dr.isSuccess());
@@ -154,7 +157,7 @@ public class FileBasedDeployAndRetrieve {
 			System.out.println("Writing results to zip file");
 			ByteArrayInputStream bais = new ByteArrayInputStream(result.getZipFile());
 //			this.PATH += "\\" + userId + "\\" + orgId;
-			File resultsFile = new File(path + "\\SFData.zip");
+			File resultsFile = new File(path + File.separator + "SFData.zip");
 			FileOutputStream os = new FileOutputStream(resultsFile);
 			try {
 				ReadableByteChannel src = Channels.newChannel(bais);
@@ -182,7 +185,7 @@ public class FileBasedDeployAndRetrieve {
 
 	private void setUnpackaged(RetrieveRequest request, String path) throws Exception {
 
-		String MANIFEST_FILE = path + "\\package.xml";
+		String MANIFEST_FILE = path + File.separator + "package.xml";
 		System.out.println(MANIFEST_FILE);
 		File unpackedManifest = new File(MANIFEST_FILE);
 
