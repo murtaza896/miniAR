@@ -223,14 +223,14 @@ public class GitController {
 	@GetMapping("/commit-history")
 	public ArrayList<CommitHistoryResponse> listCommitHistory(HttpServletRequest request){
 		String userId = userService.getIdByEmail(request.getAttribute("email").toString())+"";
-		System.out.println(userId);
+		//System.out.println(userId);
 		ArrayList<CommitHistory> commitHistories = commitHistoryService.listCommitHistory(Integer.parseInt(userId));
 		ArrayList<CommitHistoryResponse> chResponse = new ArrayList<CommitHistoryResponse>();
-		System.out.println("this is size of history array:::" + commitHistories.size());
+		//System.out.println("this is size of history array:::" + commitHistories.size());
 		for(int i = 0; i<commitHistories.size(); i++) {
 			
 			CommitHistory commitHistory = commitHistories.get(i);
-			System.out.println("my id is ......" + commitHistory.toString());
+			//System.out.println("my id is ......" + commitHistory.toString());
 			CommitHistoryResponse res = new CommitHistoryResponse(commitHistory.getGit_username(), commitHistory.getTimestamp(), commitHistory.getRepo_name(), commitHistory.getRepo_url(), commitHistory.getCommit_hash(), commitHistory.getCommit_msg(), commitHistory.getSforg().getNickName(), commitHistory.getGitAccount().getId() + "", commitHistory.getSforg().getId(), commitHistory.getRepo_id());
 			chResponse.add(res);
 		}
