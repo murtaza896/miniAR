@@ -41,7 +41,7 @@ import com.example.simplerestapis.service.JGitService2;
 import com.example.simplerestapis.service.UserService;
 import com.example.simplerestapis.service.UtilService;
 
-@CrossOrigin(origins = "https://aradhana-singh.github.io", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RestController
 @RequestMapping("/git")
 public class GitController {

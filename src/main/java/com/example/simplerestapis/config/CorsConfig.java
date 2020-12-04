@@ -12,7 +12,7 @@ public class CorsConfig {
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**").allowedMethods("GET", "POST", "PUT", "DELETE")
 				.allowedHeaders("*")
-				.allowedOrigins("https://aradhana-singh.github.io");
+				.allowedOrigins("http://localhost:4200");
 			}
 		};
 	}

@@ -27,7 +27,7 @@ import com.example.simplerestapis.service.SalesforceService;
 import com.example.simplerestapis.service.UserService;
 import com.example.simplerestapis.service.UtilService;
 
-@CrossOrigin(origins = "https://aradhana-singh.github.io" , allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:4200" , allowCredentials = "true")
 @RestController
 @RequestMapping("/org")
 public class OrgController {

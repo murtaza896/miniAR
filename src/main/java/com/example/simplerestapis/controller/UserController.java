@@ -32,7 +32,7 @@ import com.example.simplerestapis.models.UserResponse;
 import com.example.simplerestapis.models.userCredentials;
 import com.example.simplerestapis.service.UserService;
 
-@CrossOrigin(origins = "https://aradhana-singh.github.io" , allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:4200" , allowCredentials = "true")
 @RestController
 @RequestMapping("/user")
 public class UserController {
