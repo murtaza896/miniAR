@@ -32,7 +32,7 @@ import com.example.simplerestapis.models.UserResponse;
 import com.example.simplerestapis.models.userCredentials;
 import com.example.simplerestapis.service.UserService;
 
-@CrossOrigin(origins = "http://localhost:4200" , allowCredentials = "true")
+@CrossOrigin(origins = "https://aradhana-singh.github.io" , allowCredentials = "true")
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -62,9 +62,11 @@ public class UserController {
 	}
 	
 	@GetMapping("/check-existence")
-	public int checkExistence(@RequestParam(name="email") String email)
+	public ResponseEntity<Integer> checkExistence(@RequestParam(name="email") String email)
 	{
-		return userService.checkExistence(email);
+		int x = userService.checkExistence(email);
+		ResponseEntity<Integer> res = new ResponseEntity<Integer>(x, HttpStatus.OK);
+		return res;
 		// -1: not exists, 1: exists
 	}
 	
