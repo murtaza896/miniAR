@@ -144,23 +144,25 @@ public class SalesforceService {
 //		String user_id = null;
 //		user_id = utilService.readCookie(rqst, "user_id");
 //		String user_id = userService.getIdByEmail(rqst.getAttribute("email").toString()) + "";
-		final String requestTokenHeader = utilService.readCookie(rqst, "token");
-		 
+		// final String requestTokenHeader = utilService.readCookie(rqst, "token");
+		// final String requestTokenHeader = rqst.getAttribute("email").toString(); 
 		String username2 = null;
-		String jwtToken = null;
+		// String jwtToken = null;
 		// JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
-		if (requestTokenHeader != null) {
-			jwtToken = requestTokenHeader;
+		// if (requestTokenHeader != null) {
+			// jwtToken = requestTokenHeader;
 			try {
-				username2 = jwtTokenUtil.getUsernameFromToken(jwtToken);
+				// username2 = jwtTokenUtil.getUsernameFromToken(jwtToken);
+				username2 = rqst.getAttribute("email").toString();
 			} catch (IllegalArgumentException e) {
 				System.out.println("Unable to get JWT Token");
 			} catch (Exception e) {
 				System.out.println("JWT Token has expired");
 			}
-		} else {
-			System.out.println("JWT Token does not begin with Bearer String");
-		}
+		// }
+		//  else {
+		// 	System.out.println("JWT Token does not begin with Bearer String");
+		// }
 		
 		String userId = userService.getIdByEmail(username2) + "";
 //		if (user_id.equals(null))

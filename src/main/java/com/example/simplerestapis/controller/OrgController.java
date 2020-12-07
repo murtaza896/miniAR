@@ -27,7 +27,7 @@ import com.example.simplerestapis.service.SalesforceService;
 import com.example.simplerestapis.service.UserService;
 import com.example.simplerestapis.service.UtilService;
 
-@CrossOrigin(origins = "https://aradhana-singh.github.io" , allowCredentials = "true")
+@CrossOrigin(origins = "${app.angular.hosturi}" , allowCredentials = "true")
 @RestController
 @RequestMapping("/org")
 public class OrgController {
@@ -45,12 +45,14 @@ public class OrgController {
 	private UserService userService;
 	
 	@GetMapping("/new-org")
-	public RedirectView authorizeOrg(@RequestParam(required = false) String code, HttpServletRequest request) 
+	public ResponseEntity<?> authorizeOrg(@RequestParam(required = false) String code, HttpServletRequest request) 
 	{
 		SFservice.authorizeOrg(code, request);
-		RedirectView redirectView = new RedirectView();
-		redirectView.setUrl(env.getProperty("app.angular.pages.settings"));
-	    return redirectView;
+		ResponseEntity<?> responseEntity = new ResponseEntity<>(HttpStatus.OK);
+		return responseEntity;
+		// RedirectView redirectView = new RedirectView();
+		// redirectView.setUrl(env.getProperty("app.angular.pages.settings"));
+	    // return redirectView;
 	}
 	
 	@GetMapping("/list-orgs")

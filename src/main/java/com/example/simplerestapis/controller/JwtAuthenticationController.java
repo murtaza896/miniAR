@@ -23,7 +23,7 @@ import com.example.simplerestapis.service.UserService;
 
 
 @RestController
-@CrossOrigin(origins="https://aradhana-singh.github.io", allowCredentials="true")
+@CrossOrigin(origins="${app.angular.hosturi}", allowCredentials="true")
 public class JwtAuthenticationController {
 
 	@Autowired

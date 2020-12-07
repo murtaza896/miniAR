@@ -41,7 +41,7 @@ import com.example.simplerestapis.service.JGitService2;
 import com.example.simplerestapis.service.UserService;
 import com.example.simplerestapis.service.UtilService;
 
-@CrossOrigin(origins = "https://aradhana-singh.github.io", allowCredentials = "true")
+@CrossOrigin(origins = "${app.angular.hosturi}", allowCredentials = "true")
 @RestController
 @RequestMapping("/git")
 public class GitController {
@@ -70,12 +70,12 @@ public class GitController {
 	@Autowired
 	private CommitHistoryService commitHistoryService;
 	
-	@GetMapping("/oauth")
-	public ModelAndView oauthGit() {
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("oauthGit");
-		return mv;
-	}
+	// @GetMapping("/oauth")
+	// public ModelAndView oauthGit() {
+	// 	ModelAndView mv = new ModelAndView();
+	// 	mv.setViewName("oauthGit");
+	// 	return mv;
+	// }
 
 	@Autowired
 	private Environment env;
@@ -84,23 +84,23 @@ public class GitController {
 	public RedirectView authorizeGitAcc(@RequestParam String code, HttpServletRequest request) {
 //		String userId = utilService.readCookie(request, "user_id");
 		
-		final String requestTokenHeader = utilService.readCookie(request, "token");
-		System.out.println(requestTokenHeader);
+		// final String requestTokenHeader = utilService.readCookie(request, "token");
+
 		String username = null;
-		String jwtToken = null;
+		// String jwtToken = null;
 		// JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
-		if (requestTokenHeader != null) {
-			jwtToken = requestTokenHeader;
+		// if (requestTokenHeader != null) {
+			// jwtToken = requestTokenHeader;
 			try {
-				username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+				username = request.getAttribute("email").toString();
 			} catch (IllegalArgumentException e) {
 				System.out.println("Unable to get JWT Token");
 			} catch (Exception e) {
 				System.out.println("JWT Token has expired");
 			}
-		} else {
-			System.out.println("JWT Token does not begin with Bearer String");
-		}
+		// } else {
+			// System.out.println("JWT Token does not begin with Bearer String");
+		// }
 		
 		String userId = userService.getIdByEmail(username) + "";
 		System.out.println("userId: " + userId);
