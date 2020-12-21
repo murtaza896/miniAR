@@ -22,9 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.view.RedirectView;
 
-import com.example.simplerestapis.models.User;
 import com.example.simplerestapis.service.SalesforceService;
-import com.example.simplerestapis.service.UserService;
+//import com.example.simplerestapis.service.UserService;
 import com.example.simplerestapis.service.UtilService;
 
 @CrossOrigin(origins = "${app.angular.hosturi}" , allowCredentials = "true")
@@ -41,8 +40,8 @@ public class OrgController {
 	@Autowired 
 	private UtilService utilService;
 	
-	@Autowired
-	private UserService userService;
+//	@Autowired
+//	private UserService userService;
 	
 	@GetMapping("/new-org")
 	public ResponseEntity<?> authorizeOrg(@RequestParam(required = false) String code, HttpServletRequest request) 
@@ -59,7 +58,8 @@ public class OrgController {
 	public ArrayList<Map<String, String>> getOrgList(HttpServletRequest request){
 		
 //		String user_id = utilService.readCookie(request, "user_id");
-		String user_id = userService.getIdByEmail(request.getAttribute("email").toString()) + "";
+//		String user_id = userService.getIdByEmail(request.getAttribute("email").toString()) + "";
+		String user_id = utilService.readCookie(request, "user_id");
 //		System.out.println("Cookie user id:" + user_id);
 		return SFservice.getOrgList(user_id);
 	}
@@ -68,10 +68,14 @@ public class OrgController {
 	public ResponseEntity<?> addWebhook(@RequestBody String body, HttpServletRequest request){
 		JSONObject obj = new JSONObject(body);
 		String webhook_url = obj.getString("webhook_url");
-		int userId = utilService.readIdFromToken(request);
-		User user = userService.getUserById(userId);
-		user.setWebhook_url(webhook_url);
-		userService.updateUser(user);
+//		int userId = utilService.readIdFromToken(request);
+		String user_id = utilService.readCookie(request, "user_id");
+//		User user = userService.getUserById(userId);
+//		user.setWebhook_url(webhook_url);
+//		userService.updateUser(user);
+		
+		//save webhook url in mongo via node service
+		
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Content-Type", "application/json");

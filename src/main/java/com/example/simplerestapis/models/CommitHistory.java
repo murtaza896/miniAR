@@ -44,9 +44,11 @@ public class CommitHistory {
 	@Column(name = "repo_id")
 	String repo_id;
 	
-	@ManyToOne(fetch = FetchType.EAGER,optional= false)
-	@JoinColumn(name = "user_id")
-	private User user;
+//	@ManyToOne(fetch = FetchType.EAGER,optional= false)
+//	@JoinColumn(name = "user_id")
+	
+	@Column(name="user_id")
+	String userId;
 	
 	@ManyToOne(fetch = FetchType.EAGER,optional= false)
 	@JoinColumn(name = "account_id")
@@ -112,7 +114,7 @@ public class CommitHistory {
 
 
 	public CommitHistory(String commit_hash, String repo_url, Timestamp timestamp, String commit_msg, String repo_name,
-		String git_username, String repo_id, User user, GitAccounts gitAccount, SalesforceOrg sforg) {
+		String git_username, String repo_id, String userId, GitAccounts gitAccount, SalesforceOrg sforg) {
 	super();
 	this.commit_hash = commit_hash;
 	this.repo_url = repo_url;
@@ -121,7 +123,7 @@ public class CommitHistory {
 	this.repo_name = repo_name;
 	this.git_username = git_username;
 	this.repo_id = repo_id;
-	this.user = user;
+	this.userId = userId;
 	this.gitAccount = gitAccount;
 	this.sforg = sforg;
 }
@@ -131,7 +133,7 @@ public class CommitHistory {
 	public String toString() {
 		return "CommitHistory [id=" + id + ", commit_hash=" + commit_hash + ", repo_url=" + repo_url + ", timestamp="
 				+ timestamp + ", commit_msg=" + commit_msg + ", repo_name=" + repo_name + ", git_username="
-				+ git_username + ", repo_id=" + repo_id + ", user=" + user + ", gitAccount=" + gitAccount + ", sforg="
+				+ git_username + ", repo_id=" + repo_id + ", user=" + userId + ", gitAccount=" + gitAccount + ", sforg="
 				+ sforg + "]";
 	}
 
@@ -155,7 +157,14 @@ public class CommitHistory {
 	}
 
 
+	public String getUserId() {
+		return userId;
+	}
 
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
 
 
@@ -163,31 +172,17 @@ public class CommitHistory {
 		return repo_name;
 	}
 
-
-
-
-
-
 	public void setRepo_name(String repo_name) {
 		this.repo_name = repo_name;
 	}
-
-
-
-
-
 
 	public int getId() {
 		return id;
 	}
 
-
-
 	public void setId(int id) {
 		this.id = id;
 	}
-
-
 
 	public String getCommit_hash() {
 		return commit_hash;
@@ -226,19 +221,6 @@ public class CommitHistory {
 	}
 
 
-
-	public User getUser() {
-		return user;
-	}
-
-
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-
-
 	public SalesforceOrg getSforg() {
 		return sforg;
 	}
@@ -259,7 +241,6 @@ public class CommitHistory {
 //		this.user = user;
 //		this.sforg = sforg;
 //	}
-
 
 
 	public CommitHistory() {

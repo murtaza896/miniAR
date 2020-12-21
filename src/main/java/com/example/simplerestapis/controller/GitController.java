@@ -28,7 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import com.example.simplerestapis.config.JwtTokenUtil;
+//import com.example.simplerestapis.config.JwtTokenUtil;
 import com.example.simplerestapis.models.CommitHistory;
 import com.example.simplerestapis.models.CommitHistoryResponse;
 import com.example.simplerestapis.models.GitAccounts;
@@ -38,7 +38,7 @@ import com.example.simplerestapis.service.FileBasedDeployAndRetrieve;
 import com.example.simplerestapis.service.GitAccountsService;
 import com.example.simplerestapis.service.GitStoreService;
 import com.example.simplerestapis.service.JGitService2;
-import com.example.simplerestapis.service.UserService;
+//import com.example.simplerestapis.service.UserService;
 import com.example.simplerestapis.service.UtilService;
 
 @CrossOrigin(origins = "${app.angular.hosturi}", allowCredentials = "true")
@@ -55,8 +55,8 @@ public class GitController {
 	@Autowired
 	private GitAccountsService gitAccountsService;
 	
-	@Autowired
-	private UserService userService;
+//	@Autowired
+//	private UserService userService;
 
 	@Autowired
 	private JGitService2 jgitService2;
@@ -64,8 +64,8 @@ public class GitController {
 	@Autowired
 	private FileBasedDeployAndRetrieve fileBasedDeployAndRetrieve;
 
-	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
+//	@Autowired
+//	private JwtTokenUtil jwtTokenUtil;
 	
 	@Autowired
 	private CommitHistoryService commitHistoryService;
@@ -102,7 +102,7 @@ public class GitController {
 			// System.out.println("JWT Token does not begin with Bearer String");
 		// }
 		
-		String userId = userService.getIdByEmail(username) + "";
+		String userId = utilService.readCookie(request, "user_id");
 		System.out.println("userId: " + userId);
 		gitAccountsService.authorizeGitAcc(code, userId);
 		RedirectView redirectView = new RedirectView();
@@ -112,22 +112,22 @@ public class GitController {
 
 	@GetMapping("/list-repos/{accountId}")
 	public ArrayList<GitStore> listRepos(@PathVariable int accountId, HttpServletRequest request) {
-//		String userId = utilService.readCookie(request, "user_id");
-		String userId = userService.getIdByEmail(request.getAttribute("email").toString()) + "";
-		return gitStoreService.listRepos(accountId, Integer.parseInt(userId));
+		String userId = utilService.readCookie(request, "user_id");
+//		String userId = userService.getIdByEmail(request.getAttribute("email").toString()) + "";
+		return gitStoreService.listRepos(accountId, userId);
 	}
 
 	@GetMapping("list-accounts")
 	public ArrayList<GitAccounts> listGitAccounts(HttpServletRequest request) {
-//		String userId = utilService.readCookie(request, "user_id");
-		String userId = userService.getIdByEmail(request.getAttribute("email").toString()) + "";
-		return gitAccountsService.listGitAccounts(Integer.parseInt(userId));
+		String userId = utilService.readCookie(request, "user_id");
+//		String userId = userService.getIdByEmail(request.getAttribute("email").toString()) + "";
+		return gitAccountsService.listGitAccounts(userId);
 	}
 
 	@PostMapping(value = "/addFile")
 	public ResponseEntity<?> addFile(@RequestParam("file") MultipartFile file, @RequestParam(name="org_id") String orgId, HttpServletRequest request) {
-		int userId = utilService.readIdFromToken(request);
-		 
+//		int userId = utilService.readIdFromToken(request);
+		String userId = utilService.readCookie(request, "user_id"); 
 		
 		String path = env.getProperty("app.data.dirPath") + File.separator + userId + File.separator + orgId + File.separator + "package.xml" ;
 //		path = context.getRealPath(path);
@@ -161,7 +161,8 @@ public class GitController {
 		String repoId = data.get("repo_id");
 		String repoName = data.get("repo_name");
 		String gitUsername = data.get("git_username");
-		int userId = utilService.readIdFromToken(request);
+//		int userId = utilService.readIdFromToken(request);
+		String userId = utilService.readCookie(request, "user_id");
 		
 //		String path = env.getProperty("app.sf.files.uri");
 		String path = env.getProperty("app.data.dirPath") + File.separator + userId  + File.separator + org_id;
@@ -222,9 +223,10 @@ public class GitController {
 	
 	@GetMapping("/commit-history")
 	public ArrayList<CommitHistoryResponse> listCommitHistory(HttpServletRequest request){
-		String userId = userService.getIdByEmail(request.getAttribute("email").toString())+"";
+//		String userId = userService.getIdByEmail(request.getAttribute("email").toString())+"";
 		//System.out.println(userId);
-		ArrayList<CommitHistory> commitHistories = commitHistoryService.listCommitHistory(Integer.parseInt(userId));
+		String userId = utilService.readCookie(request, "user_id");
+		ArrayList<CommitHistory> commitHistories = commitHistoryService.listCommitHistory(userId);
 		ArrayList<CommitHistoryResponse> chResponse = new ArrayList<CommitHistoryResponse>();
 		//System.out.println("this is size of history array:::" + commitHistories.size());
 		for(int i = 0; i<commitHistories.size(); i++) {
@@ -249,13 +251,14 @@ public class GitController {
 			String targetOrgId = obj.getString("target_org_id");
 			String orgId = obj.getString("org_id");
 			String repoId = obj.getString("repo_id");
-			String userId = userService.getIdByEmail(request.getAttribute("email").toString())+"";
+//			String userId = userService.getIdByEmail(request.getAttribute("email").toString())+"";
+			String userId = utilService.readCookie(request, "user_id");
 			//System.out.println(obj.get("access_token") + " " + obj.get("repo_url") + " " + obj.get("commit_hash")  + " " +  obj.get("path"));
 			
 			String path = env.getProperty("app.data.dirPath") + File.separator + userId  + File.separator + obj.getString("org_id") + File.separator +obj.getString("repo_id");
 			
 			int account_id = Integer.parseInt(obj.getString("account_id")); 
-			jgitService2.testDeploy(gitAccountsService.getUserById(account_id).getAccess_token(), obj.getString("repo_url"), obj.getString("commit_hash"), path, targetOrgId, repoId, Integer.parseInt(userId), orgId);
+			jgitService2.testDeploy(gitAccountsService.getUserById(account_id).getAccess_token(), obj.getString("repo_url"), obj.getString("commit_hash"), path, targetOrgId, repoId, userId, orgId);
 			System.out.println(obj);
 			return new ResponseEntity<>(obj.toMap(), HttpStatus.OK);
 		}

@@ -17,8 +17,8 @@ public class CommitHistoryService {
 		return repository.findById(id).orElse(null);
 	}
 	
-	public ArrayList<CommitHistory> listCommitHistory(int userId){
-		return repository.findByuser_id(userId);
+	public ArrayList<CommitHistory> listCommitHistory(String userId){
+		return repository.findByUserId(userId);
 	}
 
 }

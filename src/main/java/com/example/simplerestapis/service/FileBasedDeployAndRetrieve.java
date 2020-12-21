@@ -67,7 +67,7 @@ public class FileBasedDeployAndRetrieve {
 	private static final double API_VERSION = 29.0;
 	private static final int BUFFER_SIZE = 4096;
 	List<String> filesListInDir = new ArrayList<String>();
-	public void createMetadataConnection(String type, String orgId, int userId, String repoId, String targetOrgId)
+	public void createMetadataConnection(String type, String orgId, String userId, String repoId, String targetOrgId)
 			throws RemoteException, Exception {
 		final ConnectorConfig metadataConfig = new ConnectorConfig();
 		metadataConfig.setServiceEndpoint("https://ap16.salesforce.com/services/Soap/m/49.0/");
@@ -111,7 +111,7 @@ public class FileBasedDeployAndRetrieve {
 		}
 	}
 
-	private void retrieveZip(String orgId, int userId) throws RemoteException, Exception {
+	private void retrieveZip(String orgId, String userId) throws RemoteException, Exception {
 		RetrieveRequest retrieveRequest = new RetrieveRequest();
 		// The version in package.xml overrides the version in RetrieveRequest
 		retrieveRequest.setApiVersion(API_VERSION);

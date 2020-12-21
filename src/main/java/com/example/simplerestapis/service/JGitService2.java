@@ -43,8 +43,8 @@ public class JGitService2 {
 	@Autowired
 	CommitHistoryRepository commitHistoryRepository;
 	
-	@Autowired
-	UserService userService;
+//	@Autowired
+//	UserService userService;
 	
 	@Autowired
 	SalesforceService salesforceService; 
@@ -96,7 +96,7 @@ public class JGitService2 {
 		}
 	}
 	
-	public Boolean gitCommit(String path, String message, String username , String repoUrl, int userId, String orgId,String repoName, String gitUsername, String accountId, String repoId) {
+	public Boolean gitCommit(String path, String message, String username , String repoUrl, String userId, String orgId,String repoName, String gitUsername, String accountId, String repoId) {
 		
 		try {
 			Git git = Git.open(new File(path));
@@ -107,7 +107,7 @@ public class JGitService2 {
 			Timestamp timestamp =  new Timestamp(x);
 			System.out.println("TimeStamp:" + timestamp);
 			System.out.println(rc.getName());
-			CommitHistory commitHistory  = new CommitHistory(rc.getName(), repoUrl, timestamp ,rc.getFullMessage(),  repoName, gitUsername, repoId, userService.getUserById(userId), gitAccountsService.getUserById(Integer.parseInt(accountId)) ,salesforceService.getOrg(orgId) );
+			CommitHistory commitHistory  = new CommitHistory(rc.getName(), repoUrl, timestamp ,rc.getFullMessage(),  repoName, gitUsername, repoId, userId, gitAccountsService.getUserById(Integer.parseInt(accountId)) ,salesforceService.getOrg(orgId) );
 			commitHistoryRepository.save(commitHistory);
 			System.out.println(git.toString());
 			System.out.println("Commit Successful");
@@ -142,7 +142,8 @@ public class JGitService2 {
 		file.delete();
 	}
 	
-	public void testDeploy(String accessToken, String repoUrl, String commithash, String path, String targetOrgId, String repoId, int userId, String orgId ) throws InvalidRemoteException, TransportException, GitAPIException, IOException {
+	@SuppressWarnings("unused")
+	public void testDeploy(String accessToken, String repoUrl, String commithash, String path, String targetOrgId, String repoId, String userId, String orgId ) throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 		//System.out.println("path value is::" + path);
 		
 		File file = new File(path);
@@ -157,7 +158,8 @@ public class JGitService2 {
 		git.close();
 		
 		new ZipFile(path + ".zip").addFolder(new File(path+ File.separator + "unpackaged"));
-		String url = userService.getUserById(userId).getWebhook_url();
+//		String url = userService.getUserById(userId).getWebhook_url();
+		String url = null;
 		String org_nickname = salesforceService.getOrg(orgId).getNickName();
 		String target_nickname = salesforceService.getOrg(targetOrgId).getNickName();
 		try {

@@ -19,9 +19,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.example.simplerestapis.config.JwtTokenUtil;
+//import com.example.simplerestapis.config.JwtTokenUtil;
 import com.example.simplerestapis.models.SalesforceOrg;
-import com.example.simplerestapis.models.User;
 import com.example.simplerestapis.repository.SalesforceOrgRepository;
 
 @Service
@@ -30,8 +29,8 @@ public class SalesforceService {
 	@Autowired
 	private SalesforceOrgRepository repository;
 
-	@Autowired
-	private UserService userService;
+//	@Autowired
+//	private UserService userService;
 
 	@Autowired
 	private Environment env;
@@ -39,8 +38,8 @@ public class SalesforceService {
 	@Autowired
 	private UtilService utilService;
 	
-	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
+//	@Autowired
+//	private JwtTokenUtil jwtTokenUtil;
 	
 	
 //	String authToken;
@@ -64,7 +63,7 @@ public class SalesforceService {
 
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.add("client_id", env.getProperty("app.sf.client_id"));
-		map.add("redirect_uri", env.getProperty("app.sf.redirect.uri2"));
+//		map.add("redirect_uri", env.getProperty("app.sf.redirect.uri2"));
 		map.add("client_secret", env.getProperty("app.sf.client_secret"));
 		map.add("refresh_token", sfOrg.getRefreshToken());
 		map.add("grant_type", "refresh_token");
@@ -146,32 +145,33 @@ public class SalesforceService {
 //		String user_id = userService.getIdByEmail(rqst.getAttribute("email").toString()) + "";
 		// final String requestTokenHeader = utilService.readCookie(rqst, "token");
 		// final String requestTokenHeader = rqst.getAttribute("email").toString(); 
-		String username2 = null;
+//		String username2 = null;
 		// String jwtToken = null;
 		// JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
 		// if (requestTokenHeader != null) {
 			// jwtToken = requestTokenHeader;
-			try {
-				// username2 = jwtTokenUtil.getUsernameFromToken(jwtToken);
-				username2 = rqst.getAttribute("email").toString();
-			} catch (IllegalArgumentException e) {
-				System.out.println("Unable to get JWT Token");
-			} catch (Exception e) {
-				System.out.println("JWT Token has expired");
-			}
+//			try {
+//				// username2 = jwtTokenUtil.getUsernameFromToken(jwtToken);
+//				username2 = rqst.getAttribute("email").toString();
+//			} catch (IllegalArgumentException e) {
+//				System.out.println("Unable to get JWT Token");
+//			} catch (Exception e) {
+//				System.out.println("JWT Token has expired");
+//			}
 		// }
 		//  else {
 		// 	System.out.println("JWT Token does not begin with Bearer String");
 		// }
 		
-		String userId = userService.getIdByEmail(username2) + "";
+		String userId = utilService.readCookie(rqst, "user_id");
+//		String userId = userService.getIdByEmail(username2) + "";
 //		if (user_id.equals(null))
 //			return null;
 
-		User user = userService.getUserById(Integer.parseInt(userId));
-		System.out.println("User object: " + user);
+//		User user = userService.getUserById(Integer.parseInt(userId));
+//		System.out.println("User object: " + user);
 		SalesforceOrg org = new SalesforceOrg(organizationId, accessToken, refreshToken, identityUrl, instanceUrl,
-				issuedAt, username, nickName, user);
+				issuedAt, username, nickName, userId);
 		this.addOrg(org);
 
 		return organizationId;
@@ -181,7 +181,7 @@ public class SalesforceService {
 
 	public ArrayList<Map<String, String>> getOrgList(String user_id) {
 		ArrayList<Map<String, String>> res = new ArrayList<Map<String, String>>();
-		ArrayList<SalesforceOrg> sfOrgs = repository.findByuser_id(Integer.parseInt(user_id));
+		ArrayList<SalesforceOrg> sfOrgs = repository.findByUserId(user_id);
 		for (SalesforceOrg sfOrg : sfOrgs) {
 			Map<String, String> mp = new HashMap<String, String>();
 			mp.put("org_id", sfOrg.getId());

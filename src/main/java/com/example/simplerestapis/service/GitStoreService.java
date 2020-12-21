@@ -25,11 +25,13 @@ public class GitStoreService {
 	private Environment env;
 	
 
-	public ArrayList<GitStore> listRepos(int accountId, int userId) {
+	public ArrayList<GitStore> listRepos(int accountId, String userId) {
 		RestTemplate restTemplate = new RestTemplate();
 		String url2 = env.getProperty("app.git.getrepos.uri");
 		String url3 = env.getProperty("app.git.getuser.uri");
+		
 		GitAccounts account = gitAccountsService.getUserById(accountId);
+		
 		HttpHeaders headers2 = new HttpHeaders();
 		headers2.setContentType(MediaType.APPLICATION_JSON);
 		headers2.set("Authorization","Bearer " + account.getAccess_token());

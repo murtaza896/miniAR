@@ -25,9 +25,11 @@ public class GitAccounts {
 	@Column(name = "access_token")
 	String access_token;
 	
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "user_id")
-	private User user;
+//	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+//	@JoinColumn(name = "user_id")
+	
+	@Column(name="user_id")
+	String userId;
 
 
 
@@ -63,21 +65,23 @@ public class GitAccounts {
 		this.access_token = access_token;
 	}
 
-	public User getUser() {
-		return user;
-	}
+	
 
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-	public GitAccounts(int account_id, String username, String avatar_url, String access_token, User user) {
+	public GitAccounts(int account_id, String username, String avatar_url, String access_token, String userId) {
 		super();
 		this.id = account_id;
 		this.username = username;
 		this.avatar_url = avatar_url;
 		this.access_token = access_token;
-		this.user = user;
+		this.userId = userId;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	public GitAccounts() {

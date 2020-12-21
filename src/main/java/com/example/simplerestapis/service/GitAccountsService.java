@@ -14,7 +14,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import com.example.simplerestapis.models.GitAccounts;
-import com.example.simplerestapis.models.User;
+
 import com.example.simplerestapis.repository.GitAccountsRepository;
 
 @Service
@@ -26,8 +26,8 @@ public class GitAccountsService {
 	@Autowired
 	private Environment env;
 	
-	@Autowired
-	private UserService userService;
+//	@Autowired
+//	private UserService userService;
 	
 	public GitAccounts getUserById(int id) {
 		return gitAccountsRepository.findById(id).orElse(null);
@@ -38,7 +38,7 @@ public class GitAccountsService {
 		String username;
 		String avatarUrl; 
 		String accessToken;
-		User user;
+//		String user_id;
 		String clientId = env.getProperty("app.git.client_id");
 		String clientSecret = env.getProperty("app.git.client_secret");
 		
@@ -77,14 +77,14 @@ public class GitAccountsService {
 		username = obj3.getString("login");
 		avatarUrl = obj3.getString("avatar_url");
 		System.out.println(obj3);
-		user = userService.getUserById(Integer.parseInt(userId));
+//		user = userService.getUserById(Integer.parseInt(userId));
 		
-		GitAccounts gitAccount = new GitAccounts(accId, username, avatarUrl,accessToken, user);
+		GitAccounts gitAccount = new GitAccounts(accId, username, avatarUrl,accessToken, userId);
 		gitAccountsRepository.save(gitAccount);
 		return accId;
 	}
 
-	public ArrayList<GitAccounts> listGitAccounts(int userId) {
-		return gitAccountsRepository.findByuser_id(userId);
+	public ArrayList<GitAccounts> listGitAccounts(String userId) {
+		return gitAccountsRepository.findByUserId(userId);
 	}
 }

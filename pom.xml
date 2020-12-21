@@ -3,12 +3,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.3.5.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
+	
 	<groupId>com.example</groupId>
 	<artifactId>simple-rest-apis</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -29,15 +31,15 @@
 
 
 		<dependency>
-			<groupId>com.wsdl.enterprise.api</groupId>
+			<groupId>com.enterprise.api</groupId>
 			<artifactId>enterprise</artifactId>
-			<version>1.0</version>
+			<version>1</version>
 		</dependency>
 
 		<dependency>
-			<groupId>com.wsdl.metadata.api</groupId>
+			<groupId>com.metadata.api</groupId>
 			<artifactId>metadata</artifactId>
-			<version>1.0</version>
+			<version>1</version>
 		</dependency>
 		
 		<!-- <dependency>
@@ -55,6 +57,7 @@
 			<artifactId>metadata</artifactId>
 			<version>1.0</version>
 		</dependency> -->
+		
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>bootstrap</artifactId>
@@ -90,14 +93,6 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/com.force.api/force-wsc -->
-		<dependency>
-			<groupId>com.force.api</groupId>
-			<artifactId>force-wsc</artifactId>
-			<version>50.0.0</version>
-		</dependency>
-
 
 		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security -->
 		<!-- <dependency> -->
@@ -187,14 +182,14 @@
 			<version>5.4.2.201908231537-r</version><!--$NO-MVN-MAN-VER$ -->
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-core -->
-		<dependency>
+		<!--   <dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
-		</dependency>
-		<dependency>
+		</dependency> -->
+		<!--   <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
+		</dependency> -->
 
 		<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
 		<dependency>
@@ -202,6 +197,7 @@
 			<artifactId>jjwt</artifactId>
 			<version>0.9.1</version>
 		</dependency>
+		
 		<!-- https://mvnrepository.com/artifact/net.lingala.zip4j/zip4j -->
 		<dependency>
 			<groupId>net.lingala.zip4j</groupId>
@@ -216,9 +212,31 @@
 			<version>1.10.19</version>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-config -->
+		<dependency>
+		    <groupId>org.springframework.cloud</groupId>
+		    <artifactId>spring-cloud-starter-config</artifactId>
+		    <version>2.2.6.RELEASE</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator -->
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-actuator</artifactId>
+		    <version>2.4.0</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-netflix-eureka-client -->
+		<dependency>
+		    <groupId>org.springframework.cloud</groupId>
+		    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		    <version>2.2.6.RELEASE</version>
+		</dependency>
+		
 		
 	</dependencies>
-
+	
 
 	<build>
 		<plugins>

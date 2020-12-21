@@ -36,11 +36,4 @@ src/main/java/com/example/simplerestapis/service/FileBasedDeployAndRetrieve.java
 src/main/resources/application.properties
 src/main/resources/application.properties
 __data/15/orgid/repoid/
-/.gitignore
-/.mvn/
-/files/
-/mvnw
-/mvnw.cmd
-/package.xml
-/pom.xml
 /src/

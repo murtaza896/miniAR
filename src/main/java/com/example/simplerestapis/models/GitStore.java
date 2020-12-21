@@ -6,10 +6,10 @@ public class GitStore {
 	String repoUrl;
 	String repoName;
 	String username;
-	int userId;
+	String userId;
 
 
-	public GitStore(String repoId, String repoUrl, String repoName, String username, int userId) {
+	public GitStore(String repoId, String repoUrl, String repoName, String username, String userId) {
 		super();
 		this.repoId = repoId;
 		this.repoUrl = repoUrl;
@@ -18,11 +18,11 @@ public class GitStore {
 		this.userId = userId;
 	}
 
-	public int getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(int userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 

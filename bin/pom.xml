@@ -20,25 +20,31 @@
 	</properties>
 
 	<dependencies>
-	
+		<!-- https://mvnrepository.com/artifact/com.force.api/force-wsc -->
 		<dependency>
 			<groupId>com.force.api</groupId>
 			<artifactId>force-wsc</artifactId>
 			<version>50.0.0</version>
 		</dependency>
+
+
 		
+		
+		<!-- <dependency>
+			<groupId>com.wsdl.force.api</groupId>
+			<artifactId>force</artifactId>
+			<version>50.0.0</version>
+		</dependency>
 		<dependency>
-			<groupId>com.enterprise.api</groupId>
+			<groupId>com.wsdl.enterprise.api</groupId>
 			<artifactId>enterprise</artifactId>
-			<version>1</version>
+			<version>1.0</version>
 		</dependency>
-		
 		<dependency>
-			<groupId>com.metadata.api</groupId>
+			<groupId>com.wsdl.metadata.api</groupId>
 			<artifactId>metadata</artifactId>
-			<version>1</version>
-		</dependency>
-		
+			<version>1.0</version>
+		</dependency> -->
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>bootstrap</artifactId>
@@ -193,6 +199,14 @@
 			<version>2.6.4</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.10.19</version>
+			<scope>test</scope>
+		</dependency>
+		
 	</dependencies>
 
 
