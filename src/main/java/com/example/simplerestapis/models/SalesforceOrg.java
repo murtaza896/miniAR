@@ -58,25 +58,21 @@ public class SalesforceOrg {
 
 //	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 //	@JoinColumn(name = "user_id")
-	@Column(name = "user_id")
-	String userId;
+//	@Column(name = "user_id")
+//	String userId;
 
 	public SalesforceOrg() {
 		
 	}
 	
-	
-	
 
-	
-
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+//	public String getUserId() {
+//		return userId;
+//	}
+//
+//	public void setUserId(String userId) {
+//		this.userId = userId;
+//	}
 
 	public String getId() {
 		return id;
@@ -126,19 +122,19 @@ public class SalesforceOrg {
 		this.issuedAt = issuedAt;
 	}
 
-	public SalesforceOrg(String id, String accessToken, String refreshToken, String identityUrl, String instanceUrl,
-			String issuedAt, String username, String nickName, String userId) {
-		super();
-		this.id = id;
-		this.accessToken = accessToken;
-		this.refreshToken = refreshToken;
-		this.identityUrl = identityUrl;
-		this.instanceUrl = instanceUrl;
-		this.issuedAt = issuedAt;
-		this.username = username;
-		this.nickName = nickName;
-		this.userId = userId;
-	}
+//	public SalesforceOrg(String id, String accessToken, String refreshToken, String identityUrl, String instanceUrl,
+//			String issuedAt, String username, String nickName, String userId) {
+//		super();
+//		this.id = id;
+//		this.accessToken = accessToken;
+//		this.refreshToken = refreshToken;
+//		this.identityUrl = identityUrl;
+//		this.instanceUrl = instanceUrl;
+//		this.issuedAt = issuedAt;
+//		this.username = username;
+//		this.nickName = nickName;
+////		this.userId = userId;
+//	}
 
 	public SalesforceOrg(String id, String accessToken, String refreshToken, String identityUrl, String instanceUrl,
 			String issuedAt, String username, String nickName) {

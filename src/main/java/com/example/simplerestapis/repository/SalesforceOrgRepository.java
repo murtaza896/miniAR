@@ -11,5 +11,6 @@ import com.example.simplerestapis.models.SalesforceOrg;
 @Repository
 public interface SalesforceOrgRepository extends JpaRepository<SalesforceOrg, String> {
 
-	ArrayList<SalesforceOrg> findByUserId(String user_id);
+//	ArrayList<SalesforceOrg> findByUserId(String user_id);
+//	SalesforceOrg findById(String org_id);
 }

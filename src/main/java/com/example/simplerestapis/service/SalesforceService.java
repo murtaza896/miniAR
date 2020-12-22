@@ -21,7 +21,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 //import com.example.simplerestapis.config.JwtTokenUtil;
 import com.example.simplerestapis.models.SalesforceOrg;
+import com.example.simplerestapis.models.UserOrgPK;
+import com.example.simplerestapis.models.UserOrgs;
 import com.example.simplerestapis.repository.SalesforceOrgRepository;
+import com.example.simplerestapis.repository.UserOrgsRepository;
 
 @Service
 public class SalesforceService {
@@ -29,6 +32,9 @@ public class SalesforceService {
 	@Autowired
 	private SalesforceOrgRepository repository;
 
+	@Autowired
+	private UserOrgsRepository userOrgRepository;
+	
 //	@Autowired
 //	private UserService userService;
 
@@ -44,6 +50,11 @@ public class SalesforceService {
 	
 //	String authToken;
 
+	public UserOrgs addUserOrg(UserOrgs obj)
+	{
+		return userOrgRepository.save(obj);
+	}
+	
 	public SalesforceOrg addOrg(SalesforceOrg obj) {
 		return repository.save(obj);
 	}
@@ -171,9 +182,13 @@ public class SalesforceService {
 //		User user = userService.getUserById(Integer.parseInt(userId));
 //		System.out.println("User object: " + user);
 		SalesforceOrg org = new SalesforceOrg(organizationId, accessToken, refreshToken, identityUrl, instanceUrl,
-				issuedAt, username, nickName, userId);
+				issuedAt, username, nickName);
+		
+		UserOrgPK userOrgPK = new UserOrgPK(userId ,org);
+		UserOrgs obj = new UserOrgs(userOrgPK, userId);
+		
 		this.addOrg(org);
-
+		this.addUserOrg(obj);
 		return organizationId;
 
 	}
@@ -181,7 +196,16 @@ public class SalesforceService {
 
 	public ArrayList<Map<String, String>> getOrgList(String user_id) {
 		ArrayList<Map<String, String>> res = new ArrayList<Map<String, String>>();
-		ArrayList<SalesforceOrg> sfOrgs = repository.findByUserId(user_id);
+		ArrayList<SalesforceOrg> sfOrgs = new ArrayList<SalesforceOrg>();
+		
+		ArrayList<UserOrgs> userOrgs = userOrgRepository.findByUserId(user_id);
+		
+		for(UserOrgs x: userOrgs)
+		{
+			System.out.println(x);
+			sfOrgs.add(x.getUserOrgPK().getSforg());
+		}	
+		
 		for (SalesforceOrg sfOrg : sfOrgs) {
 			Map<String, String> mp = new HashMap<String, String>();
 			mp.put("org_id", sfOrg.getId());

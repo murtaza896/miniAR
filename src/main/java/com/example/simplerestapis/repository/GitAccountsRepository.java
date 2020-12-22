@@ -8,5 +8,5 @@ import com.example.simplerestapis.models.GitAccounts;
 
 public interface GitAccountsRepository extends JpaRepository<GitAccounts, Integer> {
 
-	ArrayList<GitAccounts> findByUserId(String userId);
+	//ArrayList<GitAccounts> findByUserId(String userId);
 }

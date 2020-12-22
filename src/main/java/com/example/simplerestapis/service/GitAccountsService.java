@@ -1,6 +1,7 @@
 package com.example.simplerestapis.service;
 
 import java.util.ArrayList;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -13,15 +14,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import com.example.simplerestapis.models.GitAccounts;
 
+import com.example.simplerestapis.models.GitAccounts;
+import com.example.simplerestapis.models.UserGitAcc;
+import com.example.simplerestapis.models.UserGitAccPK;
 import com.example.simplerestapis.repository.GitAccountsRepository;
+import com.example.simplerestapis.repository.UserGitAccRepository;
 
 @Service
 public class GitAccountsService {
 
 	@Autowired
 	private GitAccountsRepository gitAccountsRepository;
+	
+	@Autowired
+	private UserGitAccRepository userGitAccRepository;
 	
 	@Autowired
 	private Environment env;
@@ -79,12 +86,26 @@ public class GitAccountsService {
 		System.out.println(obj3);
 //		user = userService.getUserById(Integer.parseInt(userId));
 		
-		GitAccounts gitAccount = new GitAccounts(accId, username, avatarUrl,accessToken, userId);
+		GitAccounts gitAccount = new GitAccounts(accId, username, avatarUrl,accessToken);
 		gitAccountsRepository.save(gitAccount);
+		
+		UserGitAccPK userGitAccPK = new UserGitAccPK(userId, gitAccount);
+		UserGitAcc userGitAcc = new UserGitAcc(userGitAccPK, userId);
+		userGitAccRepository.save(userGitAcc);
+		
 		return accId;
 	}
 
 	public ArrayList<GitAccounts> listGitAccounts(String userId) {
-		return gitAccountsRepository.findByUserId(userId);
+		
+		ArrayList<UserGitAcc> userGitAccs = userGitAccRepository.findByUserId(userId);
+		ArrayList<GitAccounts> res = new ArrayList<GitAccounts>();
+		
+		for(UserGitAcc x: userGitAccs)
+		{
+			res.add(x.getUserGitAccPK().getGitacc());
+		}
+//		return gitAccountsRepository.findByUserId(userId);
+		return res;
 	}
 }
