@@ -30,7 +30,7 @@
 		</dependency>
 
 
-		<dependency>
+		<!--  <dependency>
 			<groupId>com.enterprise.api</groupId>
 			<artifactId>enterprise</artifactId>
 			<version>1</version>
@@ -40,7 +40,7 @@
 			<groupId>com.metadata.api</groupId>
 			<artifactId>metadata</artifactId>
 			<version>1</version>
-		</dependency>
+		</dependency> -->
 		
 		<!-- <dependency>
 			<groupId>com.wsdl.force.api</groupId>
